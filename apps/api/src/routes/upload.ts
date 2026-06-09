@@ -84,16 +84,25 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     // Parse JSON
     let parsedData;
     try {
-      parsedData = parseTikTokJson(rawJsonText);
-    } catch (err: any) {
-      return res.status(400).json({
-        ok: false,
-        error: {
-          code: 'JSON_PARSE_FAILED',
-          message: 'The JSON file is malformed or invalid.'
-        }
-      });
+  parsedData = parseTikTokJson(rawJsonText);
+} catch (err: any) {
+  console.error('TikTok parser error:', {
+    message: err?.message,
+    stack: err?.stack
+  });
+
+  const isJsonSyntaxError = err?.message === 'JSON_PARSE_FAILED';
+
+  return res.status(400).json({
+    ok: false,
+    error: {
+      code: isJsonSyntaxError ? 'JSON_PARSE_FAILED' : 'PARSER_UNSUPPORTED_STRUCTURE',
+      message: isJsonSyntaxError
+        ? 'The file is not valid JSON. If this is a ZIP, make sure it contains the machine-readable TikTok JSON export.'
+        : 'The JSON is valid, but its TikTok export structure is not supported by the current parser yet.'
     }
+  });
+}
 
     if (parsedData.watchItems.length === 0 && parsedData.likeItems.length === 0) {
       return res.status(400).json({
