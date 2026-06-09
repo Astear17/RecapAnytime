@@ -2,20 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────── */
+/*  RecapAnytime — Spotify Wrapped × Terminal   */
+/* ──────────────────────────────────────────── */
+
 @layer base {
   body {
-    background-color: #050505;
+    background-color: #030303;
     color: #f5f5f0;
-    font-family: 'Geist Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  ::selection {
+    background: rgba(37, 244, 238, 0.25);
+    color: #f5f5f0;
   }
 }
 
-/* Monospace scanline effect or glowing panels */
-.terminal-glow {
-  text-shadow: 0 0 8px rgba(37, 244, 238, 0.4);
+/* ─── Dot Grid Background ─── */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-/* Blinking terminal cursor */
+.bg-grid-lines {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ─── Scanner Line Effect ─── */
+.scanner-line {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scanner-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(37, 244, 238, 0.5), transparent);
+  box-shadow: 0 0 15px rgba(37, 244, 238, 0.3);
+  animation: scanner 3s ease-in-out infinite;
+}
+
+@keyframes scanner {
+  0%, 100% { top: -2px; }
+  50% { top: 100%; }
+}
+
+/* ─── Retro CRT Scanlines ─── */
+.crt-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  z-index: 10;
+}
+
+/* ─── Terminal Glow ─── */
+.terminal-glow {
+  text-shadow: 0 0 8px rgba(37, 244, 238, 0.35);
+}
+
+.glow-red {
+  text-shadow: 0 0 8px rgba(255, 59, 92, 0.35);
+}
+
+.glow-green {
+  text-shadow: 0 0 8px rgba(29, 185, 84, 0.35);
+}
+
+/* ─── Neon Border Glow ─── */
+.border-glow-cyan {
+  box-shadow: inset 0 0 0 1px rgba(37, 244, 238, 0.15),
+              0 0 20px rgba(37, 244, 238, 0.06);
+}
+
+.border-glow-red {
+  box-shadow: inset 0 0 0 1px rgba(255, 59, 92, 0.15),
+              0 0 20px rgba(255, 59, 92, 0.06);
+}
+
+/* ─── Blinking Terminal Cursor ─── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -28,22 +108,148 @@
   margin-left: 2px;
 }
 
-/* Custom Scrollbar for Monospace UI */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #050505;
-}
-::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #ff3b5c;
+/* ─── Shimmer Gradient ─── */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #f5f5f0 0%,
+    #25f4ee 25%,
+    #ff3b5c 50%,
+    #1db954 75%,
+    #f5f5f0 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
 }
 
-/* Print styles specifically for thermal receipt */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ─── Gradient Orbs (Ambient Lighting) ─── */
+.orb-cyan {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37, 244, 238, 0.08) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.orb-red {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 59, 92, 0.08) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.orb-green {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(29, 185, 84, 0.06) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ─── Mock Phone Frame ─── */
+.phone-frame {
+  border: 2px solid #1a1a1e;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 25px 80px -12px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(37, 244, 238, 0.04);
+}
+
+.phone-notch {
+  width: 120px;
+  height: 28px;
+  background: #030303;
+  border-radius: 0 0 16px 16px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 20;
+}
+
+/* ─── Slide Transitions ─── */
+@keyframes slideEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.slide-enter {
+  animation: slideEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ─── Status LED ─── */
+.status-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: ledPulse 2s ease-in-out infinite;
+}
+
+.status-led-green {
+  background: #1db954;
+  box-shadow: 0 0 6px rgba(29, 185, 84, 0.6);
+}
+
+.status-led-red {
+  background: #ff3b5c;
+  box-shadow: 0 0 6px rgba(255, 59, 92, 0.6);
+}
+
+.status-led-cyan {
+  background: #25f4ee;
+  box-shadow: 0 0 6px rgba(37, 244, 238, 0.6);
+}
+
+@keyframes ledPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ─── FAQ smooth expand ─── */
+.faq-answer {
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #030303;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1a1e;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #25f4ee;
+}
+
+/* ─── Print styles for thermal receipt ─── */
 @media print {
   body {
     background: white !important;
