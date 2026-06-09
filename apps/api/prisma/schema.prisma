@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Recap {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  deleteTokenHash String
+
+  sourceFileType  String
+  rawFileDeleted  Boolean  @default(true)
+
+  dateRangeStart  DateTime?
+  dateRangeEnd    DateTime?
+
+  persona         String?
+  profileJson     Json
+  statsJson       Json
+  receiptJson     Json
+
+  exports         ExportImage[]
+}
+
+model ExportImage {
+  id        String   @id @default(cuid())
+  recapId   String
+  recap     Recap    @relation(fields: [recapId], references: [id], onDelete: Cascade)
+
+  format    String
+  url       String?
+  createdAt DateTime @default(now())
+}
