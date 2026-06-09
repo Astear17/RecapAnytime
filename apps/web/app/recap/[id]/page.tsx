@@ -36,6 +36,10 @@ import { SLIDE_THEMES } from '@/lib/slide-themes';
 import { WrappedSlide, WrappedStat, WrappedCard, WrappedBody } from '@/components/recap/WrappedSlide';
 import { MonthlyChart, HourChart, RankedBars, RingProgress } from '@/components/recap/charts';
 import { ProfileRing, EmojiFloat } from '@/components/recap/DecorLayers';
+import { ConfettiCanvas } from '@/components/recap/ConfettiCanvas';
+import { VinylDisc } from '@/components/recap/VinylDisc';
+import { SpotifyMiniPlayer, loadMusicPreference, saveMusicPreference } from '@/components/recap/SpotifyMiniPlayer';
+import { RecapControls, RecapSettingsButton, type RecapVibe } from '@/components/recap/RecapControls';
 
 const DEMO_STATS: RecapStats = {
   profile: {
@@ -168,10 +172,35 @@ export default function RecapPage() {
   const [deleteTokenInput, setDeleteTokenInput] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [musicEnabled, setMusicEnabled] = useState(true);
+  const [showPrefs, setShowPrefs] = useState(false);
+  const [confettiEnabled, setConfettiEnabled] = useState(true);
+  const [vinylEnabled, setVinylEnabled] = useState(true);
+  const [vibe, setVibe] = useState<RecapVibe>('default');
 
   const slideProgressTimer = useRef<NodeJS.Timeout | null>(null);
   const [slideProgress, setSlideProgress] = useState(0);
   const SLIDE_DURATION_MS = 6000;
+
+  useEffect(() => {
+    setMusicEnabled(loadMusicPreference());
+    const savedVibe = localStorage.getItem('recapanytime-vibe') as RecapVibe | null;
+    if (savedVibe) setVibe(savedVibe);
+    const savedConfetti = localStorage.getItem('recapanytime-confetti');
+    if (savedConfetti !== null) setConfettiEnabled(savedConfetti === 'true');
+    const savedVinyl = localStorage.getItem('recapanytime-vinyl');
+    if (savedVinyl !== null) setVinylEnabled(savedVinyl === 'true');
+  }, []);
+
+  useEffect(() => {
+    saveMusicPreference(musicEnabled);
+  }, [musicEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('recapanytime-vibe', vibe);
+    localStorage.setItem('recapanytime-confetti', String(confettiEnabled));
+    localStorage.setItem('recapanytime-vinyl', String(vinylEnabled));
+  }, [vibe, confettiEnabled, vinylEnabled]);
 
   useEffect(() => {
     if (isDemo) {
@@ -320,9 +349,16 @@ export default function RecapPage() {
   const t = SLIDE_THEMES;
   const watchHours = Math.floor(stats.watch.estimatedWatchSeconds / 3600);
   const repostPct = stats.engagement.repostToWatchRatio * 100;
+  const showConfetti = confettiEnabled && (slide === 15 || slide === 16);
+  const confettiBurst = slide === 15 || slide === 16;
+  const vibeGlow =
+    vibe === 'neon' ? '#25f4ee' : vibe === 'warm' ? '#fb923c' : vibe === 'cool' ? '#a855f7' : '#ff3b5c';
 
   const slides = [
     <WrappedSlide key="intro" theme={t[0]} slideNum={1} label="YOUR RECAP" icon={Sparkles} animateKey={slide} active={slide === 0} decor="burst">
+      {vinylEnabled && (
+        <VinylDisc accent={t[0].accent} label="RECAP" active={slide === 0} size={72} className="absolute top-16 right-4 opacity-80 z-10" />
+      )}
       <WrappedStat value="TikTok" unit="Recap 2026" accent={t[0].accent} active={slide === 0} />
       <WrappedBody active={slide === 0}>
         Phân tích cho <span className="text-foreground font-semibold">@{stats.profile.username || 'guest'}</span>.
@@ -372,10 +408,13 @@ export default function RecapPage() {
       <WrappedBody active={slide === 3}>Xu hướng lướt theo tháng — peak season của bạn.</WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="watch-time" theme={t[4]} slideNum={5} label="SCREEN TIME" title="Thời gian lướt" icon={Clock} animateKey={slide} active={slide === 4}>
-      <div className="flex items-center gap-4">
-        <RingProgress percent={Math.min(100, (watchHours / 1000) * 100)} accent={t[4].accent} active={slide === 4} />
-        <WrappedStat numericValue={watchHours} unit="giờ xem" accent={t[4].accent} size="lg" active={slide === 4} />
+    <WrappedSlide key="watch-time" theme={t[4]} slideNum={5} label="SCREEN TIME" title="Thời gian lướt" icon={Clock} animateKey={slide} active={slide === 4} decor="pulse">
+      <div className="flex items-center gap-3">
+        {vinylEnabled && <VinylDisc accent={t[4].accent} label={`${watchHours}h`} active={slide === 4} size={80} />}
+        <div className="flex items-center gap-3 flex-1">
+          <RingProgress percent={Math.min(100, (watchHours / 1000) * 100)} accent={t[4].accent} active={slide === 4} size={72} />
+          <WrappedStat numericValue={watchHours} unit="giờ xem" accent={t[4].accent} size="lg" active={slide === 4} />
+        </div>
       </div>
       <WrappedBody active={slide === 4}>
         ≈ <span className="text-foreground font-semibold">{Math.floor(stats.watch.estimatedWatchSeconds / 86400)} ngày</span> không ngừng nghỉ.
@@ -414,6 +453,9 @@ export default function RecapPage() {
     </WrappedSlide>,
 
     <WrappedSlide key="likes" theme={t[7]} slideNum={8} label="ENGAGEMENT" title="Lượt thích" icon={Heart} animateKey={slide} active={slide === 7} decor="pulse">
+      {vinylEnabled && slide === 7 && (
+        <VinylDisc accent={t[7].accent} label="♥" active className="absolute bottom-20 right-4 opacity-70 z-0" size={64} />
+      )}
       <WrappedStat numericValue={stats.engagement.totalLikes} unit="likes given" accent={t[7].accent} active={slide === 7} />
       <WrappedBody active={slide === 7}>
         Thả tim nhiều nhất vào <span className="text-foreground font-semibold">{stats.engagement.mostActiveLikeDay || 'các ngày'}</span>.
@@ -461,6 +503,22 @@ export default function RecapPage() {
           active={slide === 11}
         />
       )}
+      {Object.keys(stats.searches.categories).length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {Object.entries(stats.searches.categories)
+            .sort(([, a], [, b]) => b - a)
+            .slice(0, 4)
+            .map(([cat, count]) => (
+              <span
+                key={cat}
+                className="font-mono text-[9px] px-2 py-1 rounded-full border border-white/10 bg-white/[0.04]"
+                style={{ color: t[11].accent }}
+              >
+                {cat} · {count}
+              </span>
+            ))}
+        </div>
+      )}
     </WrappedSlide>,
 
     <WrappedSlide key="live" theme={t[12]} slideNum={13} label="LIVE" title="Hoạt động Live" icon={Radio} animateKey={slide} active={slide === 12} decor="pulse">
@@ -492,18 +550,28 @@ export default function RecapPage() {
     <WrappedSlide key="receipt-teaser" theme={t[14]} slideNum={15} label="RECEIPT" title="Hóa đơn Recap" icon={Receipt} animateKey={slide} active={slide === 14} decor="pulse">
       <p className="font-display text-xl font-bold text-foreground mb-2">Receiptify ready!</p>
       <WrappedBody active={slide === 14}>Hóa đơn thu ngân tóm tắt toàn bộ chỉ số của bạn.</WrappedBody>
-      <Link
-        href={`/receipt/${recapId}`}
-        className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full font-display font-semibold text-sm text-background transition-opacity hover:opacity-90"
-        style={{ background: t[14].accent }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Printer className="h-4 w-4" />
-        Xem hóa đơn
-      </Link>
+      <div className="flex flex-col gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
+        <Link
+          href={`/receipt/${recapId}?download=1`}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-display font-semibold text-sm text-background"
+          style={{ background: t[14].accent }}
+        >
+          <Printer className="h-4 w-4" />
+          Tải Receiptify PNG
+        </Link>
+        <Link
+          href={`/receipt/${recapId}`}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-display font-semibold text-sm border border-white/15 text-foreground/80"
+        >
+          Xem hóa đơn
+        </Link>
+      </div>
     </WrappedSlide>,
 
     <WrappedSlide key="persona" theme={t[15]} slideNum={16} label="PERSONA" title="Cá tính của bạn" icon={Sparkles} animateKey={slide} active={slide === 15} decor="burst">
+      {vinylEnabled && (
+        <VinylDisc accent={t[15].accent} label={stats.persona.title.slice(0, 8)} active={slide === 15} size={88} className="absolute top-20 right-3 z-10" />
+      )}
       <p className="font-mono text-xs uppercase tracking-wider mb-2" style={{ color: t[15].accent }}>
         {stats.persona.subtitle || 'Cá tính lướt dạo'}
       </p>
@@ -520,12 +588,18 @@ export default function RecapPage() {
       <p className="font-display text-lg font-semibold text-foreground/80 mb-4">Bạn đã xem hết recap!</p>
       <div className="flex flex-col gap-2.5" onClick={(e) => e.stopPropagation()}>
         <Link
-          href={`/receipt/${recapId}`}
+          href={`/receipt/${recapId}?download=1`}
           className="flex items-center justify-center gap-2 py-3 rounded-full font-display font-semibold text-sm text-background"
           style={{ background: t[16].accent }}
         >
           <Printer className="h-4 w-4" />
-          Xem & In hóa đơn
+          Tải Receiptify (PNG)
+        </Link>
+        <Link
+          href={`/receipt/${recapId}`}
+          className="flex items-center justify-center gap-2 py-3 rounded-full font-display font-semibold text-sm border border-white/15 text-foreground hover:bg-white/5 transition-colors"
+        >
+          Xem hóa đơn đầy đủ
         </Link>
         <button
           onClick={() => {
@@ -581,9 +655,12 @@ export default function RecapPage() {
           ))}
         </div>
 
-        <button onClick={() => setIsPaused((p) => !p)} className="p-2 rounded-full hover:bg-white/5 transition-colors">
-          {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <RecapSettingsButton onClick={() => setShowPrefs(true)} />
+          <button onClick={() => setIsPaused((p) => !p)} className="p-2 rounded-full hover:bg-white/5 transition-colors">
+            {isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
       <div className="relative flex items-center justify-center w-full">
@@ -594,7 +671,11 @@ export default function RecapPage() {
           <ChevronLeft className="h-8 w-8" />
         </button>
 
-        <div className={`relative rounded-2xl overflow-hidden shadow-wrapped transition-all duration-300 ${getAspectClass()}`}>
+        <div
+          className={`relative rounded-2xl overflow-hidden shadow-wrapped transition-all duration-300 ${getAspectClass()}`}
+          style={{ boxShadow: `0 24px 80px -16px rgba(0,0,0,0.75), 0 0 60px ${vibeGlow}22` }}
+        >
+          <ConfettiCanvas active={showConfetti} burst={confettiBurst} />
           <div className="absolute top-3 left-0 right-0 flex px-3 gap-1 z-20">
             {slides.map((_, idx) => (
               <div key={idx} className="h-[3px] flex-1 rounded-full overflow-hidden bg-white/10">
@@ -637,6 +718,23 @@ export default function RecapPage() {
       <div className="mt-5 font-mono text-[10px] text-muted/60 tracking-wider">
         {slide + 1} / {slides.length}
       </div>
+
+      <SpotifyMiniPlayer
+        enabled={musicEnabled}
+        onToggleEnabled={setMusicEnabled}
+        regionHint={stats.profile.region}
+      />
+
+      <RecapControls
+        open={showPrefs}
+        onClose={() => setShowPrefs(false)}
+        confettiEnabled={confettiEnabled}
+        onConfettiChange={setConfettiEnabled}
+        vinylEnabled={vinylEnabled}
+        onVinylChange={setVinylEnabled}
+        vibe={vibe}
+        onVibeChange={setVibe}
+      />
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
