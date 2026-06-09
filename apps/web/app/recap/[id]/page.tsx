@@ -142,13 +142,49 @@ export default function RecapPage() {
 
     setLoading(true);
     fetchApi<{ ok: boolean; recap: any }>(`/api/recap/${recapId}`)
-      .then((res) => {
-        if (res.ok) {
-          setStats(res.recap);
-        } else {
-          setError('Recap not found');
+  .then((res) => {
+    if (res.ok) {
+      const recap = res.recap;
+
+      setStats({
+        profile: recap.profile || {},
+        watch: recap.stats?.watch || {},
+        engagement: recap.stats?.engagement || {},
+        searches: recap.stats?.searches || {},
+        live: recap.stats?.live || {},
+        spending: recap.stats?.spending || {},
+        persona: recap.persona || recap.stats?.persona || {
+          id: 'unknown',
+          title: 'Unknown Persona',
+          subtitle: 'Chưa đủ dữ liệu',
+          description: 'Chưa có đủ dữ liệu để xác định persona.',
+          score: 0,
+          reasons: []
+        },
+        receipt: recap.receipt || {
+          receiptId: recap.id || 'RC-UNKNOWN',
+          generatedAt: recap.createdAt || new Date().toISOString(),
+          accountLabel: '@guest',
+          periodStart: recap.dateRange?.start || null,
+          periodEnd: recap.dateRange?.end || null,
+          lineItems: [],
+          spendingLines: [],
+          topSearches: [],
+          persona: recap.persona || {
+            id: 'unknown',
+            title: 'Unknown Persona',
+            subtitle: '',
+            description: '',
+            score: 0,
+            reasons: []
+          },
+          footerText: 'Thank you for scrolling.'
         }
-      })
+      });
+    } else {
+      setError('Recap not found');
+    }
+  })
       .catch((err) => {
         setError(err.message || 'Failed to load recap');
       })
