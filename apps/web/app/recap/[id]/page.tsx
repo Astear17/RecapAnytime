@@ -31,8 +31,11 @@ import {
 } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
 import { RecapStats } from '@recapanytime/shared';
+import { AnimatePresence } from 'framer-motion';
 import { SLIDE_THEMES } from '@/lib/slide-themes';
 import { WrappedSlide, WrappedStat, WrappedCard, WrappedBody } from '@/components/recap/WrappedSlide';
+import { MonthlyChart, HourChart, RankedBars, RingProgress } from '@/components/recap/charts';
+import { ProfileRing, EmojiFloat } from '@/components/recap/DecorLayers';
 
 const DEMO_STATS: RecapStats = {
   profile: {
@@ -59,8 +62,20 @@ const DEMO_STATS: RecapStats = {
     mostActiveMonth: 'March',
     longestStreakDays: 45,
     videosPerDay: {},
-    videosPerMonth: {},
-    hourlyDistribution: {},
+    videosPerMonth: {
+      '2025-12': 4200,
+      '2026-01': 8900,
+      '2026-02': 10200,
+      '2026-03': 12400,
+      '2026-04': 14800,
+      '2026-05': 16800,
+    },
+    hourlyDistribution: {
+      '0': 2100, '1': 1800, '2': 2400, '3': 1900, '4': 1200, '5': 800,
+      '6': 1100, '7': 3200, '8': 4100, '9': 3800, '10': 4500, '11': 3600,
+      '12': 2800, '13': 3100, '14': 3900, '15': 3400, '16': 2200, '17': 1800,
+      '18': 2600, '19': 3200, '20': 4100, '21': 4800, '22': 5200, '23': 4900,
+    },
   },
   engagement: {
     totalLikes: 6000,
@@ -303,19 +318,27 @@ export default function RecapPage() {
   }
 
   const t = SLIDE_THEMES;
+  const watchHours = Math.floor(stats.watch.estimatedWatchSeconds / 3600);
+  const repostPct = stats.engagement.repostToWatchRatio * 100;
 
   const slides = [
-    <WrappedSlide key="intro" theme={t[0]} slideNum={1} label="YOUR RECAP" icon={Sparkles} animateKey={slide}>
-      <WrappedStat value="TikTok" unit="Recap 2026" accent={t[0].accent} />
-      <WrappedBody>
+    <WrappedSlide key="intro" theme={t[0]} slideNum={1} label="YOUR RECAP" icon={Sparkles} animateKey={slide} active={slide === 0} decor="burst">
+      <WrappedStat value="TikTok" unit="Recap 2026" accent={t[0].accent} active={slide === 0} />
+      <WrappedBody active={slide === 0}>
         Phân tích cho <span className="text-foreground font-semibold">@{stats.profile.username || 'guest'}</span>.
         Vuốt để khám phá thói quen lướt dạo của bạn.
       </WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="profile" theme={t[1]} slideNum={2} label="PROFILE" title="Tài khoản của bạn" icon={User} animateKey={slide}>
-      <WrappedStat value={stats.profile.displayName || 'Guest'} accent={t[1].accent} size="lg" />
-      <WrappedCard accent={t[1].accent}>
+    <WrappedSlide key="profile" theme={t[1]} slideNum={2} label="PROFILE" title="Tài khoản của bạn" icon={User} animateKey={slide} active={slide === 1} decor="pulse">
+      <ProfileRing
+        photoUrl={stats.profile.profilePhoto}
+        accent={t[1].accent}
+        active={slide === 1}
+        displayName={stats.profile.displayName || stats.profile.username || 'U'}
+      />
+      <WrappedStat value={stats.profile.displayName || 'Guest'} accent={t[1].accent} size="lg" active={slide === 1} />
+      <WrappedCard accent={t[1].accent} active={slide === 1}>
         <p className="font-mono text-xs space-y-2">
           <span className="block"><span className="text-foreground/50">@</span>{stats.profile.username || 'guest'}</span>
           <span className="block text-foreground/70">{stats.profile.followerCount || 0} followers · {stats.profile.followingCount || 0} following</span>
@@ -324,38 +347,44 @@ export default function RecapPage() {
       </WrappedCard>
     </WrappedSlide>,
 
-    <WrappedSlide key="period" theme={t[2]} slideNum={3} label="TIMELINE" title="Khoảng thời gian" icon={Calendar} animateKey={slide}>
-      <div className="space-y-3">
+    <WrappedSlide key="period" theme={t[2]} slideNum={3} label="TIMELINE" title="Khoảng thời gian" icon={Calendar} animateKey={slide} active={slide === 2}>
+      <div className="space-y-2">
         <p className="font-display text-2xl font-bold" style={{ color: t[2].accent }}>
           {stats.watch.firstWatchAt ? stats.watch.firstWatchAt.substring(0, 10) : '—'}
         </p>
-        <p className="font-mono text-xs text-foreground/40">đến</p>
+        <div className="flex items-center gap-2 py-1">
+          <div className="h-px flex-1 bg-white/15" />
+          <span className="font-mono text-[10px] text-foreground/40">→</span>
+          <div className="h-px flex-1 bg-white/15" />
+        </div>
         <p className="font-display text-2xl font-bold text-foreground">
           {stats.watch.lastWatchAt ? stats.watch.lastWatchAt.substring(0, 10) : '—'}
         </p>
       </div>
-      <WrappedBody>Toàn bộ tương tác trong nửa năm qua — ghi nhận ngày {new Date(stats.receipt.generatedAt).toLocaleDateString('vi-VN')}.</WrappedBody>
-    </WrappedSlide>,
-
-    <WrappedSlide key="watch-count" theme={t[3]} slideNum={4} label="WATCH STATS" title="Video đã xem" icon={Eye} animateKey={slide}>
-      <WrappedStat value={stats.watch.totalVideos.toLocaleString()} unit="videos" accent={t[3].accent} />
-      <WrappedBody>Một con số đáng kinh ngạc trên bảng tin Foryou của bạn.</WrappedBody>
-    </WrappedSlide>,
-
-    <WrappedSlide key="watch-time" theme={t[4]} slideNum={5} label="SCREEN TIME" title="Thời gian lướt" icon={Clock} animateKey={slide}>
-      <WrappedStat
-        value={Math.floor(stats.watch.estimatedWatchSeconds / 3600).toLocaleString()}
-        unit="giờ xem video"
-        accent={t[4].accent}
-      />
-      <WrappedBody>
-        Tương đương <span className="text-foreground font-semibold">{Math.floor(stats.watch.estimatedWatchSeconds / 86400)} ngày</span> lướt liên tục không ngừng nghỉ.
+      <WrappedBody active={slide === 2}>
+        Streak dài nhất: <span className="text-foreground font-semibold">{stats.watch.longestStreakDays} ngày</span> liên tục.
       </WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="sessions" theme={t[5]} slideNum={6} label="SESSIONS" title="Phiên lướt" icon={Activity} animateKey={slide}>
-      <WrappedStat value={stats.watch.sessionCount.toLocaleString()} unit="phiên lướt" accent={t[5].accent} size="lg" />
-      <WrappedCard accent={t[5].accent}>
+    <WrappedSlide key="watch-count" theme={t[3]} slideNum={4} label="WATCH STATS" title="Video đã xem" icon={Eye} animateKey={slide} active={slide === 3}>
+      <WrappedStat numericValue={stats.watch.totalVideos} unit="videos" accent={t[3].accent} active={slide === 3} />
+      <MonthlyChart data={stats.watch.videosPerMonth} accent={t[3].accent} active={slide === 3} />
+      <WrappedBody active={slide === 3}>Xu hướng lướt theo tháng — peak season của bạn.</WrappedBody>
+    </WrappedSlide>,
+
+    <WrappedSlide key="watch-time" theme={t[4]} slideNum={5} label="SCREEN TIME" title="Thời gian lướt" icon={Clock} animateKey={slide} active={slide === 4}>
+      <div className="flex items-center gap-4">
+        <RingProgress percent={Math.min(100, (watchHours / 1000) * 100)} accent={t[4].accent} active={slide === 4} />
+        <WrappedStat numericValue={watchHours} unit="giờ xem" accent={t[4].accent} size="lg" active={slide === 4} />
+      </div>
+      <WrappedBody active={slide === 4}>
+        ≈ <span className="text-foreground font-semibold">{Math.floor(stats.watch.estimatedWatchSeconds / 86400)} ngày</span> không ngừng nghỉ.
+      </WrappedBody>
+    </WrappedSlide>,
+
+    <WrappedSlide key="sessions" theme={t[5]} slideNum={6} label="SESSIONS" title="Phiên lướt" icon={Activity} animateKey={slide} active={slide === 5}>
+      <WrappedStat numericValue={stats.watch.sessionCount} unit="phiên lướt" accent={t[5].accent} size="lg" active={slide === 5} />
+      <WrappedCard accent={t[5].accent} active={slide === 5}>
         <div className="grid grid-cols-2 gap-3 font-mono text-xs">
           <div>
             <p className="text-foreground/50 mb-1">Dài nhất</p>
@@ -369,33 +398,34 @@ export default function RecapPage() {
       </WrappedCard>
     </WrappedSlide>,
 
-    <WrappedSlide key="active-time" theme={t[6]} slideNum={7} label="PEAK HOURS" title="Giờ vàng" icon={Sun} animateKey={slide}>
-      <div className="space-y-5">
-        <div>
-          <p className="font-mono text-[10px] text-foreground/45 uppercase tracking-wider mb-1">Thứ hoạt động nhất</p>
-          <p className="font-display text-3xl font-bold" style={{ color: t[6].accent }}>{stats.watch.mostActiveWeekday || '—'}</p>
-        </div>
-        <div>
-          <p className="font-mono text-[10px] text-foreground/45 uppercase tracking-wider mb-1">Giờ hoạt động mạnh nhất</p>
-          <p className="font-display text-3xl font-bold text-foreground">
-            {stats.watch.mostActiveHour !== null ? `${stats.watch.mostActiveHour}:00` : '—'}
-          </p>
-        </div>
-      </div>
+    <WrappedSlide key="active-time" theme={t[6]} slideNum={7} label="PEAK HOURS" title="Giờ vàng" icon={Sun} animateKey={slide} active={slide === 6}>
+      <p className="font-display text-2xl font-bold mb-1" style={{ color: t[6].accent }}>
+        {stats.watch.mostActiveWeekday || '—'}
+      </p>
+      <p className="font-mono text-[10px] text-foreground/45 mb-2">
+        Peak: {stats.watch.mostActiveHour !== null ? `${stats.watch.mostActiveHour}:00` : '—'}
+      </p>
+      <HourChart
+        data={stats.watch.hourlyDistribution}
+        accent={t[6].accent}
+        highlightHour={stats.watch.mostActiveHour}
+        active={slide === 6}
+      />
     </WrappedSlide>,
 
-    <WrappedSlide key="likes" theme={t[7]} slideNum={8} label="ENGAGEMENT" title="Lượt thích" icon={Heart} animateKey={slide}>
-      <WrappedStat value={stats.engagement.totalLikes.toLocaleString()} unit="likes given" accent={t[7].accent} />
-      <WrappedBody>
-        Bạn thả tim đều tay nhất vào <span className="text-foreground font-semibold">{stats.engagement.mostActiveLikeDay || 'các ngày'}</span> hàng tuần.
+    <WrappedSlide key="likes" theme={t[7]} slideNum={8} label="ENGAGEMENT" title="Lượt thích" icon={Heart} animateKey={slide} active={slide === 7} decor="pulse">
+      <WrappedStat numericValue={stats.engagement.totalLikes} unit="likes given" accent={t[7].accent} active={slide === 7} />
+      <WrappedBody active={slide === 7}>
+        Thả tim nhiều nhất vào <span className="text-foreground font-semibold">{stats.engagement.mostActiveLikeDay || 'các ngày'}</span>.
       </WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="comments" theme={t[8]} slideNum={9} label="COMMENTS" title="Bình luận" icon={MessageCircle} animateKey={slide}>
-      <WrappedStat value={stats.engagement.totalComments.toLocaleString()} unit="bình luận" accent={t[8].accent} size="lg" />
+    <WrappedSlide key="comments" theme={t[8]} slideNum={9} label="COMMENTS" title="Bình luận" icon={MessageCircle} animateKey={slide} active={slide === 8}>
+      <EmojiFloat emojis={stats.engagement.topCommentEmojis.map((e) => e.emoji)} active={slide === 8} />
+      <WrappedStat numericValue={stats.engagement.totalComments} unit="bình luận" accent={t[8].accent} size="lg" active={slide === 8} />
       {stats.engagement.topCommentEmojis.length > 0 && (
-        <WrappedCard accent={t[8].accent}>
-          <p className="font-mono text-[10px] text-foreground/45 mb-2">Emoji yêu thích</p>
+        <WrappedCard accent={t[8].accent} active={slide === 8} delay={0.55}>
+          <p className="font-mono text-[10px] text-foreground/45 mb-2">Top emoji</p>
           <div className="flex gap-3 text-2xl">
             {stats.engagement.topCommentEmojis.slice(0, 5).map((e, idx) => (
               <span key={idx} title={`${e.count} lượt`}>{e.emoji}</span>
@@ -405,63 +435,63 @@ export default function RecapPage() {
       )}
     </WrappedSlide>,
 
-    <WrappedSlide key="shares" theme={t[9]} slideNum={10} label="SHARES" title="Chia sẻ" icon={Share2} animateKey={slide}>
-      <WrappedStat value={stats.engagement.totalShares.toLocaleString()} unit="lần chia sẻ" accent={t[9].accent} />
-      <WrappedBody>
-        Cách chia sẻ phổ biến: <span className="text-foreground font-semibold">{stats.engagement.mostUsedShareMethod || 'Copy Link'}</span>
+    <WrappedSlide key="shares" theme={t[9]} slideNum={10} label="SHARES" title="Chia sẻ" icon={Share2} animateKey={slide} active={slide === 9}>
+      <WrappedStat numericValue={stats.engagement.totalShares} unit="lần chia sẻ" accent={t[9].accent} active={slide === 9} />
+      <WrappedBody active={slide === 9}>
+        Phổ biến nhất: <span className="text-foreground font-semibold">{stats.engagement.mostUsedShareMethod || 'Copy Link'}</span>
       </WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="reposts" theme={t[10]} slideNum={11} label="REPOSTS" title="Repost" icon={Repeat2} animateKey={slide}>
-      <WrappedStat value={stats.engagement.totalReposts.toLocaleString()} unit="reposts" accent={t[10].accent} />
-      <WrappedBody>
-        Tỷ lệ repost/xem: <span className="text-foreground font-semibold">{(stats.engagement.repostToWatchRatio * 100).toFixed(1)}%</span> — bạn là nguồn lan tỏa nội dung.
+    <WrappedSlide key="reposts" theme={t[10]} slideNum={11} label="REPOSTS" title="Repost" icon={Repeat2} animateKey={slide} active={slide === 10}>
+      <div className="flex items-center gap-4">
+        <RingProgress percent={Math.min(100, repostPct * 3)} accent={t[10].accent} active={slide === 10} size={72} />
+        <WrappedStat numericValue={stats.engagement.totalReposts} unit="reposts" accent={t[10].accent} size="lg" active={slide === 10} />
+      </div>
+      <WrappedBody active={slide === 10}>
+        Tỷ lệ repost/xem: <span className="text-foreground font-semibold">{repostPct.toFixed(1)}%</span>
       </WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="searches" theme={t[11]} slideNum={12} label="SEARCH" title="Tìm kiếm" icon={Search} animateKey={slide}>
-      <WrappedStat value={stats.searches.totalSearches.toLocaleString()} unit="lần tìm kiếm" accent={t[11].accent} size="lg" />
+    <WrappedSlide key="searches" theme={t[11]} slideNum={12} label="SEARCH" title="Tìm kiếm" icon={Search} animateKey={slide} active={slide === 11}>
+      <WrappedStat numericValue={stats.searches.totalSearches} unit="lần tìm kiếm" accent={t[11].accent} size="lg" active={slide === 11} />
       {stats.searches.topSearches.length > 0 && (
-        <WrappedCard accent={t[11].accent}>
-          <p className="font-mono text-[10px] text-foreground/45 mb-2">Top từ khóa</p>
-          <ul className="font-mono text-xs space-y-1.5">
-            {stats.searches.topSearches.slice(0, 3).map((item, idx) => (
-              <li key={idx} className="flex justify-between gap-4">
-                <span className="text-foreground/80">{idx + 1}. &ldquo;{item.term}&rdquo;</span>
-                <span style={{ color: t[11].accent }}>{item.count}×</span>
-              </li>
-            ))}
-          </ul>
-        </WrappedCard>
+        <RankedBars
+          items={stats.searches.topSearches.map((s) => ({ label: s.term, value: s.count }))}
+          accent={t[11].accent}
+          active={slide === 11}
+        />
       )}
     </WrappedSlide>,
 
-    <WrappedSlide key="live" theme={t[12]} slideNum={13} label="LIVE" title="Hoạt động Live" icon={Radio} animateKey={slide}>
-      <WrappedStat value={stats.live.watchedLiveRoomsCount.toLocaleString()} unit="phòng live đã xem" accent={t[12].accent} size="lg" />
+    <WrappedSlide key="live" theme={t[12]} slideNum={13} label="LIVE" title="Hoạt động Live" icon={Radio} animateKey={slide} active={slide === 12} decor="pulse">
+      <WrappedStat numericValue={stats.live.watchedLiveRoomsCount} unit="phòng live" accent={t[12].accent} size="lg" active={slide === 12} />
       {stats.live.totalGoLiveSessions > 0 && (
-        <WrappedBody>Bạn còn làm host livestream <span className="text-foreground font-semibold">{stats.live.totalGoLiveSessions} lần</span>!</WrappedBody>
+        <WrappedBody active={slide === 12}>
+          Host livestream <span className="text-foreground font-semibold">{stats.live.totalGoLiveSessions} lần</span>!
+        </WrappedBody>
       )}
     </WrappedSlide>,
 
-    <WrappedSlide key="shop" theme={t[13]} slideNum={14} label="TIKTOK SHOP" title="Chi tiêu" icon={ShoppingBag} animateKey={slide}>
+    <WrappedSlide key="shop" theme={t[13]} slideNum={14} label="TIKTOK SHOP" title="Chi tiêu" icon={ShoppingBag} animateKey={slide} active={slide === 13}>
       <WrappedStat
-        value={stats.spending.totalSpendVnd != null ? (stats.spending.totalSpendVnd / 1_000_000).toFixed(1) + 'M' : '0'}
+        value={stats.spending.totalSpendVnd != null ? `${(stats.spending.totalSpendVnd / 1_000_000).toFixed(1)}M` : '0'}
         unit="VND đã chi"
         accent={t[13].accent}
         size="lg"
+        active={slide === 13}
       />
-      <WrappedCard accent={t[13].accent}>
+      <WrappedCard accent={t[13].accent} active={slide === 13}>
         <div className="font-mono text-xs space-y-1.5">
           <p><span className="text-foreground/50">Đơn hàng:</span> <span className="font-semibold text-foreground">{stats.spending.orderCount}</span></p>
-          <p><span className="text-foreground/50">Hoàn thành:</span> <span style={{ color: t[13].accent }}>{stats.spending.completedOrderCount}</span></p>
+          <p><span className="text-foreground/50">Đã duyệt sản phẩm:</span> <span style={{ color: t[13].accent }}>{stats.spending.productBrowsingCount}</span></p>
         </div>
       </WrappedCard>
-      <WrappedBody>{stats.spending.summaryTextVi}</WrappedBody>
+      <WrappedBody active={slide === 13}>{stats.spending.summaryTextVi}</WrappedBody>
     </WrappedSlide>,
 
-    <WrappedSlide key="receipt-teaser" theme={t[14]} slideNum={15} label="RECEIPT" title="Hóa đơn Recap" icon={Receipt} animateKey={slide}>
+    <WrappedSlide key="receipt-teaser" theme={t[14]} slideNum={15} label="RECEIPT" title="Hóa đơn Recap" icon={Receipt} animateKey={slide} active={slide === 14} decor="pulse">
       <p className="font-display text-xl font-bold text-foreground mb-2">Receiptify ready!</p>
-      <WrappedBody>Bản hóa đơn thu ngân tóm tắt toàn bộ chỉ số xem, tim, repost và chi tiêu.</WrappedBody>
+      <WrappedBody active={slide === 14}>Hóa đơn thu ngân tóm tắt toàn bộ chỉ số của bạn.</WrappedBody>
       <Link
         href={`/receipt/${recapId}`}
         className="inline-flex items-center gap-2 mt-5 px-5 py-2.5 rounded-full font-display font-semibold text-sm text-background transition-opacity hover:opacity-90"
@@ -473,12 +503,12 @@ export default function RecapPage() {
       </Link>
     </WrappedSlide>,
 
-    <WrappedSlide key="persona" theme={t[15]} slideNum={16} label="PERSONA" title="Cá tính của bạn" icon={Sparkles} animateKey={slide}>
+    <WrappedSlide key="persona" theme={t[15]} slideNum={16} label="PERSONA" title="Cá tính của bạn" icon={Sparkles} animateKey={slide} active={slide === 15} decor="burst">
       <p className="font-mono text-xs uppercase tracking-wider mb-2" style={{ color: t[15].accent }}>
         {stats.persona.subtitle || 'Cá tính lướt dạo'}
       </p>
-      <WrappedStat value={stats.persona.title} accent={t[15].accent} size="lg" />
-      <WrappedBody>{stats.persona.description}</WrappedBody>
+      <WrappedStat value={stats.persona.title} accent={t[15].accent} size="lg" active={slide === 15} />
+      <WrappedBody active={slide === 15}>{stats.persona.description}</WrappedBody>
       {stats.persona.score > 0 && (
         <p className="font-display text-sm font-semibold mt-3" style={{ color: t[15].accent }}>
           Score {stats.persona.score}/10
@@ -486,7 +516,7 @@ export default function RecapPage() {
       )}
     </WrappedSlide>,
 
-    <WrappedSlide key="final" theme={t[16]} slideNum={17} label="THE END" title="Recap hoàn tất" icon={PartyPopper} animateKey={slide}>
+    <WrappedSlide key="final" theme={t[16]} slideNum={17} label="THE END" title="Recap hoàn tất" icon={PartyPopper} animateKey={slide} active={slide === 16} decor="burst">
       <p className="font-display text-lg font-semibold text-foreground/80 mb-4">Bạn đã xem hết recap!</p>
       <div className="flex flex-col gap-2.5" onClick={(e) => e.stopPropagation()}>
         <Link
@@ -588,7 +618,11 @@ export default function RecapPage() {
               else handlePrevSlide();
             }}
           >
-            {slides[slide]}
+            <AnimatePresence mode="wait">
+              <div key={slide} className="absolute inset-0">
+                {slides[slide]}
+              </div>
+            </AnimatePresence>
           </div>
         </div>
 

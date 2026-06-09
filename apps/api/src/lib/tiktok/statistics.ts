@@ -287,7 +287,8 @@ export function calculateSearchStats(searchItems: NormalizedSearchItem[]): Searc
 
 export function calculateSpendingStats(
   shopItems: NormalizedShopItem[],
-  spendingItems: NormalizedSpendingItem[]
+  spendingItems: NormalizedSpendingItem[],
+  productBrowsingCount = 0
 ): SpendingStats {
   const orderCount = new Set(shopItems.map(s => s.orderId).filter(Boolean)).size;
   const completedOrders = shopItems.filter(s => s.status?.toLowerCase().includes('complete') || s.status?.toLowerCase().includes('giao thành công'));
@@ -302,15 +303,25 @@ export function calculateSpendingStats(
   const returnOrRefundCount = new Set(returnOrRefund.map(s => s.orderId).filter(Boolean)).size;
 
   let totalSpendVnd = 0;
+  const countedOrders = new Set<string>();
   const shopCounts: Record<string, number> = {};
   const categoryCounts: Record<string, number> = {};
 
   for (const item of shopItems) {
-    if (item.priceVnd) {
-      // Only count completed or default orders towards spending
-      const isReturned = item.status?.toLowerCase().includes('return') || item.status?.toLowerCase().includes('refund');
+    if (item.priceVnd && item.orderId && !countedOrders.has(item.orderId)) {
+      const isReturned =
+        item.status?.toLowerCase().includes('return') ||
+        item.status?.toLowerCase().includes('refund');
       if (!isReturned) {
-        totalSpendVnd += item.priceVnd * (item.itemCount || 1);
+        totalSpendVnd += item.priceVnd;
+        countedOrders.add(item.orderId);
+      }
+    } else if (item.priceVnd && !item.orderId) {
+      const isReturned =
+        item.status?.toLowerCase().includes('return') ||
+        item.status?.toLowerCase().includes('refund');
+      if (!isReturned) {
+        totalSpendVnd += item.priceVnd;
       }
     }
     if (item.shopName) {
@@ -381,7 +392,7 @@ export function calculateSpendingStats(
     completedOrderCount,
     returnOrRefundCount,
     totalSpendVnd: totalSpendVnd > 0 ? totalSpendVnd : null,
-    productBrowsingCount: shopItems.length,
+    productBrowsingCount,
     cartItemCount: 0, // Fallback if no cart parsing
     voucherCount: 0,  // Fallback
     reviewCount: 0,   // Fallback

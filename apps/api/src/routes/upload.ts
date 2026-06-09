@@ -11,7 +11,7 @@ import prisma from '../lib/prisma';
 const router = Router();
 const upload = multer({
   limits: {
-    fileSize: 50 * 1024 * 1024 // 50 MB
+    fileSize: 100 * 1024 * 1024 // 100 MB — real TikTok JSON exports can be 20–40 MB+
   }
 });
 
@@ -118,7 +118,11 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
     const watchStats = calculateWatchStats(parsedData.watchItems);
     const searchStats = calculateSearchStats(parsedData.searchItems);
     const liveStats = calculateLiveStats(parsedData.liveItems);
-    const spendingStats = calculateSpendingStats(parsedData.shopItems, parsedData.spendingItems);
+    const spendingStats = calculateSpendingStats(
+      parsedData.shopItems,
+      parsedData.spendingItems,
+      parsedData.productBrowsingCount
+    );
     const engagementStats = calculateEngagementStats(
       parsedData.likeItems,
       parsedData.commentItems,

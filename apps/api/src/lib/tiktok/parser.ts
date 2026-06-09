@@ -566,15 +566,23 @@ export function parseTikTokJson(rawJson: string): ParsedTikTokExport {
   const shopItems: NormalizedShopItem[] = [];
 
   for (const order of orderHistories) {
-    const orderDate = readDate(order, DATE_KEYS);
-    const orderId = readField<string>(order, ['OrderId', 'Order ID', 'orderId']);
-    const status = readString(order, ['OrderStatus', 'Order Status', 'status', 'Status'], 'Unknown');
+    const orderDate = readDate(order, ['order_date', 'OrderDate', 'Order Date', ...DATE_KEYS]);
+    const orderId =
+      readString(order, ['order_number', 'OrderId', 'Order ID', 'orderId', 'orderNumber']) || undefined;
+    const status = readString(
+      order,
+      ['order_status', 'OrderStatus', 'Order Status', 'status', 'Status'],
+      'Unknown'
+    );
+    const orderTotalVnd = parseVnd(
+      readField<any>(order, ['total_price', 'TotalPrice', 'Total Price', 'Price', 'price'])
+    );
 
     const productList = asArray(
       readField<any>(order, [
+        'Products',
         'ProductList',
         'productList',
-        'Products',
         'products',
         'Items',
         'items'
@@ -582,26 +590,47 @@ export function parseTikTokJson(rawJson: string): ParsedTikTokExport {
     );
 
     if (productList.length > 0) {
+      let priceAssigned = false;
       for (const product of productList) {
         shopItems.push({
           date: orderDate,
           orderId,
           status,
-          productName: readField<string>(product, ['ProductName', 'Product Name', 'Name', 'name']),
-          shopName: readField<string>(product, ['ShopName', 'Shop Name', 'Seller', 'seller']),
-          priceVnd: parseVnd(readField<any>(product, ['Price', 'price', 'TotalPrice', 'Total Price'])),
-          itemCount: readNumber(product, ['Quantity', 'quantity', 'Count', 'count'], 1)
+          productName: readString(product, [
+            'product_name',
+            'ProductName',
+            'Product Name',
+            'Name',
+            'name'
+          ]),
+          shopName: readString(product, ['shop_name', 'ShopName', 'Shop Name', 'Seller', 'seller']),
+          priceVnd: !priceAssigned ? orderTotalVnd : null,
+          itemCount: readNumber(product, ['quantity', 'Quantity', 'Count', 'count'], 1)
         });
+        priceAssigned = true;
       }
     } else if (orderDate || orderId || status !== 'Unknown') {
       shopItems.push({
         date: orderDate,
         orderId,
         status,
-        priceVnd: parseVnd(readField<any>(order, ['TotalPrice', 'Total Price', 'Price', 'price']))
+        priceVnd: orderTotalVnd
       });
     }
   }
+
+  const productBrowsingSection = readField<any>(shopSection, [
+    'Product Browsing History',
+    'ProductBrowsingHistory'
+  ]);
+  const productBrowsingList = asArray(
+    readField<any>(productBrowsingSection, [
+      'ProductBrowsingHistories',
+      'productBrowsingHistories',
+      'ProductBrowsingHistory',
+      'BrowsingHistory'
+    ]) || productBrowsingSection
+  );
 
   const walletSection = getRootSection(root, [
     'Income+ Wallet',
@@ -709,6 +738,7 @@ export function parseTikTokJson(rawJson: string): ParsedTikTokExport {
     liveItems,
     shopItems,
     spendingItems,
+    productBrowsingCount: productBrowsingList.length,
     warnings
   };
 }

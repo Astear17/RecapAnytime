@@ -101,6 +101,7 @@ export type ParsedTikTokExport = {
   liveItems: NormalizedLiveItem[];
   shopItems: NormalizedShopItem[];
   spendingItems: NormalizedSpendingItem[];
+  productBrowsingCount: number;
   warnings: ParserWarning[];
 };
 export type RawOrderHistory = {

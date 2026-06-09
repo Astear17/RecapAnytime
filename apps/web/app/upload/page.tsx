@@ -57,9 +57,9 @@ export default function UploadPage() {
       setErrorMessage('Unsupported file type. Please upload a TikTok JSON or ZIP export.');
       return;
     }
-    if (selectedFile.size > 50 * 1024 * 1024) {
+    if (selectedFile.size > 100 * 1024 * 1024) {
       setUploadState('error');
-      setErrorMessage('The file is too large. Max file size is 50MB.');
+      setErrorMessage('The file is too large. Max file size is 100MB.');
       return;
     }
 
@@ -171,7 +171,7 @@ export default function UploadPage() {
         <div className="space-y-2">
           <h1 className="text-xl font-bold text-foreground">Parser Terminal</h1>
           <p className="text-xs text-muted leading-relaxed">
-            Upload your `user_data_tiktok.json` or standard `.zip` file from TikTok. Max file size: 50MB. 
+            Upload your `user_data_tiktok.json` or standard `.zip` file from TikTok. Max file size: 100MB. 
             Raw files are parsed immediately in memory and are never saved permanently.
           </p>
         </div>
