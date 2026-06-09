@@ -6,9 +6,10 @@ interface MonthlyChartProps {
   data: Record<string, number>;
   accent: string;
   active?: boolean;
+  compact?: boolean;
 }
 
-export function MonthlyChart({ data, accent, active = true }: MonthlyChartProps) {
+export function MonthlyChart({ data, accent, active = true, compact = false }: MonthlyChartProps) {
   const entries = Object.entries(data)
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-6);
@@ -22,7 +23,7 @@ export function MonthlyChart({ data, accent, active = true }: MonthlyChartProps)
   };
 
   return (
-    <div className="flex items-end gap-1.5 h-28 mt-4">
+    <div className={`flex items-end gap-1.5 mt-4 ${compact ? 'h-20' : 'h-28'}`}>
       {entries.map(([month, count], i) => {
         const barH = Math.max(8, Math.round((count / max) * 96));
         return (
@@ -47,9 +48,10 @@ interface HourChartProps {
   accent: string;
   highlightHour?: number | null;
   active?: boolean;
+  compact?: boolean;
 }
 
-export function HourChart({ data, accent, highlightHour, active = true }: HourChartProps) {
+export function HourChart({ data, accent, highlightHour, active = true, compact = false }: HourChartProps) {
   const hours = Array.from({ length: 24 }, (_, h) => ({
     hour: h,
     count: Number(data[h] ?? data[String(h)] ?? 0),
@@ -57,7 +59,7 @@ export function HourChart({ data, accent, highlightHour, active = true }: HourCh
   const max = Math.max(...hours.map((h) => h.count), 1);
 
   return (
-    <div className="flex items-end gap-[2px] h-24 mt-3">
+    <div className={`flex items-end gap-[2px] mt-3 ${compact ? 'h-16' : 'h-24'}`}>
       {hours.map(({ hour, count }, i) => {
         const isPeak = highlightHour === hour;
         const barH = Math.max(4, Math.round((count / max) * 88));

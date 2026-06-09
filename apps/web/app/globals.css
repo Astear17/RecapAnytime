@@ -250,6 +250,45 @@
   background: #ff3b5c;
 }
 
+/* ─── Recap layout variants ─── */
+.recap-layout-wide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.recap-layout-wide .recap-vinyl-decor {
+  position: static !important;
+  opacity: 1 !important;
+}
+
+.recap-layout-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recap-layout-story {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-text,
+  .animate-float,
+  .slide-enter,
+  .terminal-cursor::after,
+  .status-led {
+    animation: none !important;
+  }
+
+  .wrapped-card:hover {
+    transform: none;
+  }
+}
+
 /* ─── Print styles for thermal receipt ─── */
 @media print {
   body {

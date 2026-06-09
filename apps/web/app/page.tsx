@@ -16,8 +16,10 @@ import {
   Search,
   ShoppingBag,
 } from 'lucide-react';
-import { MOCK_PREVIEW_SLIDES } from '@/lib/slide-themes';
+import { DEMO_STATS } from '@/lib/recap/demo-stats';
+import { getPreviewMetadata } from '@/lib/recap/build-slides';
 
+const PREVIEW_SLIDES = getPreviewMetadata(DEMO_STATS, 'tiktok');
 const PREVIEW_ICONS = [Eye, Heart, Search, ShoppingBag, Sparkles];
 
 const FAQ_ITEMS = [
@@ -78,12 +80,12 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMockSlide((prev) => (prev + 1) % MOCK_PREVIEW_SLIDES.length);
+      setMockSlide((prev) => (prev + 1) % PREVIEW_SLIDES.length);
     }, 3500);
     return () => clearInterval(interval);
   }, []);
 
-  const currentSlide = MOCK_PREVIEW_SLIDES[mockSlide];
+  const currentSlide = PREVIEW_SLIDES[mockSlide];
   const SlideIcon = PREVIEW_ICONS[mockSlide];
 
   return (
@@ -157,7 +159,7 @@ export default function Home() {
             {/* Quick stats strip */}
             <div className="flex flex-wrap gap-3 pt-2">
               {[
-                { label: '17 slides', color: '#ff3b5c' },
+                { label: 'Up to 17 slides', color: '#ff3b5c' },
                 { label: 'Privacy-first', color: '#1db954' },
                 { label: 'Receipt export', color: '#25f4ee' },
               ].map((tag) => (
@@ -184,7 +186,7 @@ export default function Home() {
                 <div className="phone-notch" />
 
                 <div className="flex gap-1 justify-center py-3 px-5">
-                  {MOCK_PREVIEW_SLIDES.map((s, idx) => (
+                  {PREVIEW_SLIDES.map((s, idx) => (
                     <div key={idx} className="h-[3px] flex-1 rounded-full overflow-hidden bg-white/10">
                       <div
                         className="h-full rounded-full transition-all duration-500"
@@ -198,7 +200,7 @@ export default function Home() {
                 </div>
 
                 <div
-                  className={`relative bg-gradient-to-br ${currentSlide.bg} px-6 pb-8 pt-4 min-h-[400px] md:min-h-[440px] flex flex-col justify-between slide-enter`}
+                  className={`relative bg-gradient-to-br ${currentSlide.gradient} px-6 pb-8 pt-4 min-h-[400px] md:min-h-[440px] flex flex-col justify-between slide-enter`}
                   key={mockSlide}
                 >
                   <div className="wrapped-grain absolute inset-0 pointer-events-none" />

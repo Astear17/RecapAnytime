@@ -2,36 +2,31 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings2, Sparkles, Music, Zap, X } from 'lucide-react';
-
-export type RecapVibe = 'default' | 'neon' | 'warm' | 'cool';
+import { THEME_PACKS } from '@/lib/recap/theme-packs';
+import type { RecapTheme } from '@/lib/recap/types';
 
 interface RecapControlsProps {
   open: boolean;
   onClose: () => void;
+  theme: RecapTheme;
+  onThemeChange: (v: RecapTheme) => void;
   confettiEnabled: boolean;
   onConfettiChange: (v: boolean) => void;
   vinylEnabled: boolean;
   onVinylChange: (v: boolean) => void;
-  vibe: RecapVibe;
-  onVibeChange: (v: RecapVibe) => void;
 }
 
-const VIBES: { id: RecapVibe; label: string; color: string }[] = [
-  { id: 'default', label: 'TikTok', color: '#ff3b5c' },
-  { id: 'neon', label: 'Neon', color: '#25f4ee' },
-  { id: 'warm', label: 'Warm', color: '#fb923c' },
-  { id: 'cool', label: 'Cool', color: '#a855f7' },
-];
+const THEMES: RecapTheme[] = ['tiktok', 'spotify', 'ytmusic'];
 
 export function RecapControls({
   open,
   onClose,
+  theme,
+  onThemeChange,
   confettiEnabled,
   onConfettiChange,
   vinylEnabled,
   onVinylChange,
-  vibe,
-  onVibeChange,
 }: RecapControlsProps) {
   return (
     <>
@@ -68,21 +63,27 @@ export function RecapControls({
 
               <div className="space-y-4">
                 <div>
-                  <p className="font-mono text-[10px] text-muted uppercase tracking-wider mb-2">Vibe màu</p>
+                  <p className="font-mono text-[10px] text-muted uppercase tracking-wider mb-2">Theme pack</p>
                   <div className="flex gap-2">
-                    {VIBES.map((v) => (
-                      <button
-                        key={v.id}
-                        onClick={() => onVibeChange(v.id)}
-                        className={`flex-1 py-2 rounded-xl font-display text-xs font-semibold border transition-all ${
-                          vibe === v.id ? 'border-white/30 bg-white/10' : 'border-white/5 bg-white/[0.03]'
-                        }`}
-                        style={{ color: vibe === v.id ? v.color : undefined }}
-                      >
-                        {v.label}
-                      </button>
-                    ))}
+                    {THEMES.map((id) => {
+                      const pack = THEME_PACKS[id];
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => onThemeChange(id)}
+                          className={`flex-1 py-2 rounded-xl font-display text-xs font-semibold border transition-all ${
+                            theme === id ? 'border-white/30 bg-white/10' : 'border-white/5 bg-white/[0.03]'
+                          }`}
+                          style={{ color: theme === id ? pack.glowColor : undefined }}
+                        >
+                          {pack.label}
+                        </button>
+                      );
+                    })}
                   </div>
+                  <p className="font-mono text-[9px] text-muted mt-2">
+                    {THEME_PACKS[theme].progressStyle === 'continuous' ? 'Progress bar liên tục (YT Music)' : 'Progress bar từng slide (Spotify)'}
+                  </p>
                 </div>
 
                 <ToggleRow

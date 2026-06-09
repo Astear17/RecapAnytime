@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
-import type { SlideTheme } from '@/lib/slide-themes';
+import type { SlideTheme } from '@/lib/recap/theme-packs';
+import type { AspectRatio } from '@/lib/recap/types';
 import { CountUp } from './CountUp';
 import { DecorLayers } from './DecorLayers';
 
@@ -14,9 +15,9 @@ interface WrappedSlideProps {
   icon?: LucideIcon;
   children: React.ReactNode;
   footer?: string;
-  animateKey?: string | number;
   active?: boolean;
   decor?: 'default' | 'burst' | 'pulse';
+  layout?: AspectRatio;
 }
 
 export function WrappedSlide({
@@ -27,19 +28,14 @@ export function WrappedSlide({
   icon: Icon,
   children,
   footer,
-  animateKey,
   active = true,
   decor = 'default',
+  layout = 'story',
 }: WrappedSlideProps) {
+  const padding = layout === 'wide' ? 'p-4 md:p-5' : 'p-6 md:p-8';
+
   return (
-    <motion.div
-      key={animateKey}
-      initial={{ opacity: 0, x: 40 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -30 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className={`flex flex-col justify-between h-full p-6 md:p-8 text-left relative overflow-hidden bg-gradient-to-br ${theme.gradient}`}
-    >
+    <div className={`flex flex-col justify-between h-full ${padding} text-left relative overflow-hidden bg-gradient-to-br ${theme.gradient}`}>
       <DecorLayers accent={theme.accent} variant={decor} active={active} />
       <div className="wrapped-grain absolute inset-0 pointer-events-none z-[1]" />
 
@@ -58,20 +54,20 @@ export function WrappedSlide({
           <span>{label}</span>
         </div>
         {title && (
-          <h2 className="font-display text-base md:text-lg font-bold text-foreground/95 leading-tight">
+          <h2 className={`font-display font-bold text-foreground/95 leading-tight ${layout === 'wide' ? 'text-sm md:text-base' : 'text-base md:text-lg'}`}>
             {title}
           </h2>
         )}
       </motion.div>
 
-      <div className="relative z-10 my-auto py-3 md:py-5">
+      <div className={`relative z-10 my-auto ${layout === 'wide' ? 'py-2' : 'py-3 md:py-5'}`}>
         {Icon && (
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={active ? { scale: 1, rotate: 0 } : { scale: 0.5, rotate: -20 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
           >
-            <Icon className="h-9 w-9 md:h-10 md:w-10 mb-3 md:mb-4" style={{ color: theme.accent }} />
+            <Icon className={`mb-3 md:mb-4 ${layout === 'wide' ? 'h-7 w-7' : 'h-9 w-9 md:h-10 md:w-10'}`} style={{ color: theme.accent }} />
           </motion.div>
         )}
         {children}
@@ -82,7 +78,7 @@ export function WrappedSlide({
           {footer}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -93,6 +89,7 @@ interface WrappedStatProps {
   accent: string;
   size?: 'lg' | 'xl';
   active?: boolean;
+  layout?: AspectRatio;
 }
 
 export function WrappedStat({
@@ -102,8 +99,12 @@ export function WrappedStat({
   accent,
   size = 'xl',
   active = true,
+  layout = 'story',
 }: WrappedStatProps) {
-  const sizeClass = size === 'xl' ? 'text-[2.75rem] md:text-[3.25rem]' : 'text-[2rem] md:text-[2.5rem]';
+  const sizeClass =
+    layout === 'wide'
+      ? size === 'xl' ? 'text-[2rem] md:text-[2.25rem]' : 'text-[1.5rem] md:text-[1.75rem]'
+      : size === 'xl' ? 'text-[2.75rem] md:text-[3.25rem]' : 'text-[2rem] md:text-[2.5rem]';
 
   return (
     <motion.div
@@ -117,7 +118,7 @@ export function WrappedStat({
       </p>
       {unit && (
         <motion.p
-          className="text-lg md:text-xl font-display font-semibold"
+          className={`font-display font-semibold ${layout === 'wide' ? 'text-base md:text-lg' : 'text-lg md:text-xl'}`}
           style={{ color: accent }}
           initial={{ opacity: 0, x: -10 }}
           animate={active ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
