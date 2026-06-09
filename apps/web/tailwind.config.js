@@ -2,16 +2,17 @@
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}"
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
-        background: '#030303',
-        foreground: '#f5f5f0',
-        muted: '#6b7280',
-        panel: '#0b0b0c',
-        'panel-border': '#1a1a1e',
+        background: '#080808',
+        foreground: '#fafaf8',
+        muted: '#8b8b96',
+        panel: '#111114',
+        'panel-border': '#222228',
         'accent-red': '#ff3b5c',
         'accent-cyan': '#25f4ee',
         'accent-green': '#1db954',
@@ -23,19 +24,20 @@ module.exports = {
         'spotify-green': '#1db954',
         'receipt-paper': '#f4f1e8',
         'receipt-ink': '#111111',
-        'surface': '#111113',
-        'surface-hover': '#18181b',
+        'surface': '#141418',
+        'surface-hover': '#1c1c22',
       },
       fontFamily: {
-        display: ['"Space Grotesk"', 'sans-serif'],
-        sans: ['"Space Grotesk"', 'var(--font-geist-sans)', 'sans-serif'],
-        mono: ['"JetBrains Mono"', '"Geist Mono"', '"IBM Plex Mono"', 'monospace'],
+        display: ['"Space Grotesk"', 'var(--font-geist-sans)', 'sans-serif'],
+        sans: ['var(--font-geist-sans)', '"Space Grotesk"', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', '"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
-        'neon-cyan': '0 0 20px rgba(37, 244, 238, 0.15), 0 0 60px rgba(37, 244, 238, 0.05)',
-        'neon-red': '0 0 20px rgba(255, 59, 92, 0.15), 0 0 60px rgba(255, 59, 92, 0.05)',
-        'neon-green': '0 0 20px rgba(29, 185, 84, 0.15), 0 0 60px rgba(29, 185, 84, 0.05)',
-        'glow-lg': '0 0 40px rgba(37, 244, 238, 0.08), 0 0 80px rgba(255, 59, 92, 0.06)',
+        'neon-cyan': '0 0 24px rgba(37, 244, 238, 0.2), 0 0 64px rgba(37, 244, 238, 0.08)',
+        'neon-red': '0 0 24px rgba(255, 59, 92, 0.2), 0 0 64px rgba(255, 59, 92, 0.08)',
+        'neon-green': '0 0 24px rgba(29, 185, 84, 0.2), 0 0 64px rgba(29, 185, 84, 0.08)',
+        'wrapped': '0 24px 80px -16px rgba(0, 0, 0, 0.75)',
+        'glow-lg': '0 0 48px rgba(37, 244, 238, 0.1), 0 0 96px rgba(255, 59, 92, 0.08)',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out forwards',
@@ -44,6 +46,7 @@ module.exports = {
         'scanner': 'scanner 3s ease-in-out infinite',
         'float': 'float 6s ease-in-out infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
+        'gradient-shift': 'gradientShift 8s ease infinite',
       },
       keyframes: {
         fadeIn: {
@@ -65,6 +68,10 @@ module.exports = {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },
+        },
+        gradientShift: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
     },
