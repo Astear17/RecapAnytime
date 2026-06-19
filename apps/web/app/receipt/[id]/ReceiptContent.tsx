@@ -276,9 +276,13 @@ export default function ReceiptPageContent() {
         <button
           onClick={handleExportPng}
           disabled={exporting}
-          className="btn-wrapped-primary flex items-center gap-2 text-white px-8 py-3 rounded-full font-display font-semibold text-sm disabled:opacity-50"
+          className="btn-wrapped-primary flex items-center gap-2 text-white px-8 py-3 rounded-full font-display font-semibold text-sm disabled:opacity-50 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Download className="h-4 w-4" />
+          {exporting ? (
+            <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
           {exporting ? 'Đang tạo ảnh...' : 'Tải Receiptify (.png)'}
         </button>
         <button
