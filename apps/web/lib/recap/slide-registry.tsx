@@ -27,6 +27,7 @@ import { MonthlyChart, HourChart, RankedBars, RingProgress } from '@/components/
 import { ProfileRing, EmojiFloat } from '@/components/recap/DecorLayers';
 import { VinylDisc } from '@/components/recap/VinylDisc';
 import type { SlideContext, SlideId } from './types';
+import { showToast } from '@/lib/toast';
 
 export interface SlideDefinition {
   id: SlideId;
@@ -54,10 +55,18 @@ export const SLIDE_REGISTRY: SlideDefinition[] = [
     build: (ctx) => {
       const { theme, stats, active, vinylEnabled, layout } = ctx;
       return (
-        <WrappedSlide theme={theme} slideNum={ctx.slideNum} label="YOUR RECAP" icon={Sparkles} active={active} decor="burst" layout={layout}>
-          {vinylEnabled && !ctx.reducedMotion && (
-            <VinylDisc accent={theme.accent} label="RECAP" active={active} size={layout === 'wide' ? 56 : 72} className="absolute top-16 right-4 opacity-80 z-10 recap-vinyl-decor" />
-          )}
+        <WrappedSlide
+          theme={theme}
+          slideNum={ctx.slideNum}
+          label="YOUR RECAP"
+          icon={Sparkles}
+          active={active}
+          decor="burst"
+          layout={layout}
+          decorDisc={vinylEnabled && !ctx.reducedMotion ? (
+            <VinylDisc accent={theme.accent} label="RECAP" active={active} size={layout === 'wide' ? 56 : 72} className="opacity-80" />
+          ) : undefined}
+        >
           <WrappedStat value="TikTok" unit="Recap 2026" accent={theme.accent} active={active} layout={layout} />
           <WrappedBody active={active}>
             Phân tích cho <span className="text-foreground font-semibold">@{stats.profile.username || 'guest'}</span>.
@@ -157,7 +166,7 @@ export const SLIDE_REGISTRY: SlideDefinition[] = [
       return (
         <WrappedSlide theme={theme} slideNum={ctx.slideNum} label="SCREEN TIME" title="Thời gian lướt" icon={Clock} active={active} decor="pulse" layout={layout}>
           <div className={`flex items-center gap-3 ${layout === 'wide' ? 'flex-row' : ''}`}>
-            {vinylEnabled && !ctx.reducedMotion && <VinylDisc accent={theme.accent} label={`${watchHours}h`} active={active} size={layout === 'wide' ? 64 : 80} className="recap-vinyl-decor" />}
+            {vinylEnabled && !ctx.reducedMotion && <VinylDisc accent={theme.accent} label={`${watchHours}h`} active={active} size={layout === 'wide' ? 64 : 80} />}
             <div className="flex items-center gap-3 flex-1">
               <RingProgress percent={Math.min(100, (watchHours / 1000) * 100)} accent={theme.accent} active={active} size={layout === 'wide' ? 60 : 72} />
               <WrappedStat numericValue={watchHours} unit="giờ xem" accent={theme.accent} size="lg" active={active} layout={layout} />
@@ -228,10 +237,19 @@ export const SLIDE_REGISTRY: SlideDefinition[] = [
     build: (ctx) => {
       const { theme, stats, active, vinylEnabled, layout } = ctx;
       return (
-        <WrappedSlide theme={theme} slideNum={ctx.slideNum} label="ENGAGEMENT" title="Lượt thích" icon={Heart} active={active} decor="pulse" layout={layout}>
-          {vinylEnabled && active && !ctx.reducedMotion && (
-            <VinylDisc accent={theme.accent} label="♥" active className="absolute bottom-20 right-4 opacity-70 z-0 recap-vinyl-decor" size={64} />
-          )}
+        <WrappedSlide
+          theme={theme}
+          slideNum={ctx.slideNum}
+          label="ENGAGEMENT"
+          title="Lượt thích"
+          icon={Heart}
+          active={active}
+          decor="pulse"
+          layout={layout}
+          decorDisc={vinylEnabled && active && !ctx.reducedMotion ? (
+            <VinylDisc accent={theme.accent} label="♥" active size={layout === 'wide' ? 52 : 64} className="opacity-70" />
+          ) : undefined}
+        >
           <WrappedStat numericValue={stats.engagement.totalLikes} unit="likes given" accent={theme.accent} active={active} layout={layout} />
           <WrappedBody active={active}>
             Thả tim nhiều nhất vào <span className="text-foreground font-semibold">{stats.engagement.mostActiveLikeDay || 'các ngày'}</span>.
@@ -422,10 +440,19 @@ export const SLIDE_REGISTRY: SlideDefinition[] = [
     build: (ctx) => {
       const { theme, stats, active, vinylEnabled, layout } = ctx;
       return (
-        <WrappedSlide theme={theme} slideNum={ctx.slideNum} label="PERSONA" title="Cá tính của bạn" icon={Sparkles} active={active} decor="burst" layout={layout}>
-          {vinylEnabled && !ctx.reducedMotion && (
-            <VinylDisc accent={theme.accent} label={stats.persona.title.slice(0, 8)} active={active} size={layout === 'wide' ? 72 : 88} className="absolute top-20 right-3 z-10 recap-vinyl-decor" />
-          )}
+        <WrappedSlide
+          theme={theme}
+          slideNum={ctx.slideNum}
+          label="PERSONA"
+          title="Cá tính của bạn"
+          icon={Sparkles}
+          active={active}
+          decor="burst"
+          layout={layout}
+          decorDisc={vinylEnabled && !ctx.reducedMotion ? (
+            <VinylDisc accent={theme.accent} label={stats.persona.title.slice(0, 8)} active={active} size={layout === 'wide' ? 72 : 88} className="opacity-80" />
+          ) : undefined}
+        >
           <p className="font-mono text-xs uppercase tracking-wider mb-2" style={{ color: theme.accent }}>
             {stats.persona.subtitle || 'Cá tính lướt dạo'}
           </p>
@@ -463,7 +490,7 @@ export const SLIDE_REGISTRY: SlideDefinition[] = [
             <button
               onClick={() => {
                 navigator.clipboard.writeText(`${window.location.origin}/recap/${recapId}`);
-                alert('Đã copy link chia sẻ!');
+                showToast('Đã copy link chia sẻ!');
               }}
               className="flex items-center justify-center gap-2 py-3 rounded-full font-display font-semibold text-sm border border-white/15 text-foreground hover:bg-white/5 transition-colors"
             >

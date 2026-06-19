@@ -18,6 +18,7 @@ interface WrappedSlideProps {
   active?: boolean;
   decor?: 'default' | 'burst' | 'pulse';
   layout?: AspectRatio;
+  decorDisc?: React.ReactNode;
 }
 
 export function WrappedSlide({
@@ -31,6 +32,7 @@ export function WrappedSlide({
   active = true,
   decor = 'default',
   layout = 'story',
+  decorDisc,
 }: WrappedSlideProps) {
   const padding = layout === 'wide' ? 'p-4 md:p-5' : 'p-6 md:p-8';
 
@@ -38,6 +40,12 @@ export function WrappedSlide({
     <div className={`flex flex-col justify-between h-full ${padding} text-left relative overflow-hidden bg-gradient-to-br ${theme.gradient}`}>
       <DecorLayers accent={theme.accent} variant={decor} active={active} />
       <div className="wrapped-grain absolute inset-0 pointer-events-none z-[1]" />
+
+      {decorDisc && (
+        <div className="absolute top-10 right-3 z-[3] pointer-events-none recap-disc-slot">
+          {decorDisc}
+        </div>
+      )}
 
       <motion.div
         className="relative z-10 space-y-2"

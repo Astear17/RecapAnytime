@@ -258,11 +258,6 @@
   align-items: center;
 }
 
-.recap-layout-wide .recap-vinyl-decor {
-  position: static !important;
-  opacity: 1 !important;
-}
-
 .recap-layout-feed {
   display: flex;
   flex-direction: column;
@@ -272,6 +267,11 @@
 .recap-layout-story {
   display: flex;
   flex-direction: column;
+}
+
+/* ─── Decorative disc slot ─── */
+.recap-disc-slot {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* ─── Reduced motion ─── */
@@ -286,6 +286,43 @@
 
   .wrapped-card:hover {
     transform: none;
+  }
+}
+
+/* ─── Toast notifications ─── */
+.toast-pop {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  z-index: 100;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: #fafaf8;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: toastIn 0.3s ease forwards;
+  pointer-events: none;
+}
+
+.toast-exit {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+  transition: all 0.3s ease;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
