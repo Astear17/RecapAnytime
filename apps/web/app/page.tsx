@@ -55,22 +55,22 @@ const FEATURES = [
     icon: Shield,
     gradient: 'from-[#0a2e16] to-[#0a1a0a]',
     accent: '#1db954',
-    title: 'Privacy First',
-    desc: 'Dữ liệu thô xử lý trong RAM, chỉ lưu thống kê tổng hợp đã khử nhạy cảm.',
+    title: 'Bảo mật tuyệt đối',
+    desc: 'Dữ liệu thô xử lý trong RAM, chỉ lưu thống kê tổng hợp. Không ai thấy dữ liệu riêng của bạn.',
   },
   {
     icon: Zap,
     gradient: 'from-[#0a1a2e] to-[#0a0a1a]',
     accent: '#25f4ee',
-    title: 'Rich Insights',
-    desc: 'Watch sessions, streak, comments, shares, search keywords, live & shopping.',
+    title: 'Phân tích sâu sắc',
+    desc: 'Thời gian xem, phiên lướt, bình luận, chia sẻ, tìm kiếm, livestream, mua sắm — tất cả trong một recap.',
   },
   {
     icon: Receipt,
     gradient: 'from-[#2d0a0a] to-[#1a0a0a]',
     accent: '#ff3b5c',
-    title: 'Receiptify',
-    desc: 'Hóa đơn recap dạng thermal receipt — chia sẻ hoặc in ra giấy.',
+    title: 'Receiptify cá nhân',
+    desc: 'Hóa đơn recap dạng thermal receipt — screenshot và chia sẻ lên mạng xã hội ngay.',
   },
 ];
 
@@ -124,17 +124,17 @@ export default function Home() {
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] font-mono text-[11px] text-muted">
               <span className="status-led status-led-cyan" />
-              YOUR DATA. YOUR RECAP.
+              DỮ LIỆU CỦA BẠN. RECAP CỦA BẠN.
             </div>
 
             <div className="space-y-5">
               <h1 className="text-[2.75rem] md:text-[3.75rem] lg:text-[4rem] font-display font-bold tracking-tight leading-[1.02]">
-                Your TikTok,
+                TikTok của bạn,
                 <br />
-                <span className="shimmer-text">wrapped anytime.</span>
+                <span className="shimmer-text">gói gọn trong vài slide.</span>
               </h1>
               <p className="text-muted text-base md:text-lg leading-relaxed max-w-md font-sans">
-                Biến dữ liệu export TikTok thành recap đầy màu sắc — phong cách Spotify Wrapped gặp YouTube Music Recap.
+                Biến dữ liệu export TikTok thành recap cá nhân hóa — phong cách Spotify Wrapped. Mỗi con số, mỗi thói quen, mỗi bất ngờ.
               </p>
             </div>
 
@@ -159,9 +159,9 @@ export default function Home() {
             {/* Quick stats strip */}
             <div className="flex flex-wrap gap-3 pt-2">
               {[
-                { label: 'Up to 17 slides', color: '#ff3b5c' },
-                { label: 'Privacy-first', color: '#1db954' },
-                { label: 'Receipt export', color: '#25f4ee' },
+                { label: 'Tối đa 17 slide', color: '#ff3b5c' },
+                { label: 'Bảo mật tuyệt đối', color: '#1db954' },
+                { label: 'Xuất hóa đơn PNG', color: '#25f4ee' },
               ].map((tag) => (
                 <span
                   key={tag.label}
@@ -228,7 +228,7 @@ export default function Home() {
                   </div>
 
                   <div className="relative z-10 flex items-center justify-center gap-2 text-[10px] font-mono text-foreground/25">
-                    <span>tap to continue</span>
+                    <span>chạm để tiếp tục</span>
                     <ArrowRight className="h-3 w-3" />
                   </div>
                 </div>

@@ -60,7 +60,7 @@ export function getPreviewMetadata(stats: RecapStats, theme: RecapTheme): Previe
     'watch-count': {
       label: 'WATCH STATS',
       bigNumber: stats.watch.totalVideos.toLocaleString(),
-      unit: 'videos watched',
+      unit: 'video đã xem',
       sub: `Thời gian lướt ước tính: ${watchHours} giờ`,
       accent: getSlideTheme(theme, 'watch-count').accent,
       gradient: getSlideTheme(theme, 'watch-count').gradient,
@@ -68,7 +68,7 @@ export function getPreviewMetadata(stats: RecapStats, theme: RecapTheme): Previe
     likes: {
       label: 'ENGAGEMENT',
       bigNumber: stats.engagement.totalLikes.toLocaleString(),
-      unit: 'likes given',
+      unit: 'lần thả tim',
       sub: `Bạn thả tim nhiều nhất vào ${stats.engagement.mostActiveLikeDay || 'các ngày'}`,
       accent: getSlideTheme(theme, 'likes').accent,
       gradient: getSlideTheme(theme, 'likes').gradient,
@@ -76,7 +76,7 @@ export function getPreviewMetadata(stats: RecapStats, theme: RecapTheme): Previe
     searches: {
       label: 'SEARCH LOG',
       bigNumber: stats.searches.totalSearches.toLocaleString(),
-      unit: 'searches made',
+      unit: 'lần tìm kiếm',
       sub: stats.searches.topSearches.length > 0
         ? `Top: "${stats.searches.topSearches[0].term}"${stats.searches.topSearches[1] ? `, "${stats.searches.topSearches[1].term}"` : ''}`
         : 'Khám phá xu hướng tìm kiếm của bạn',
@@ -86,7 +86,7 @@ export function getPreviewMetadata(stats: RecapStats, theme: RecapTheme): Previe
     shop: {
       label: 'TIKTOK SHOP',
       bigNumber: stats.spending.totalSpendVnd != null ? `${(stats.spending.totalSpendVnd / 1_000_000).toFixed(1)}M` : '0',
-      unit: 'VND spent',
+      unit: 'VND đã chi',
       sub: `${stats.spending.orderCount} đơn hàng, ${stats.spending.completedOrderCount} hoàn thành`,
       accent: getSlideTheme(theme, 'shop').accent,
       gradient: getSlideTheme(theme, 'shop').gradient,
@@ -95,7 +95,7 @@ export function getPreviewMetadata(stats: RecapStats, theme: RecapTheme): Previe
       label: 'PERSONA',
       bigNumber: stats.persona.title.split(' ')[0] || stats.persona.title,
       unit: stats.persona.title.split(' ').slice(1).join(' ') || 'Scroller',
-      sub: `${stats.persona.subtitle} — Score ${stats.persona.score}/10`,
+      sub: `${stats.persona.subtitle} — Độ ${stats.persona.score}/10`,
       accent: getSlideTheme(theme, 'persona').accent,
       gradient: getSlideTheme(theme, 'persona').gradient,
     },

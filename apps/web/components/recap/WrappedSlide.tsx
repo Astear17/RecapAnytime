@@ -86,6 +86,10 @@ export function WrappedSlide({
           {footer}
         </div>
       )}
+
+      <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none z-[2]">
+        <span className="font-mono text-[8px] text-foreground/15 tracking-widest uppercase">RecapAnytime</span>
+      </div>
     </div>
   );
 }
@@ -111,8 +115,8 @@ export function WrappedStat({
 }: WrappedStatProps) {
   const sizeClass =
     layout === 'wide'
-      ? size === 'xl' ? 'text-[2rem] md:text-[2.25rem]' : 'text-[1.5rem] md:text-[1.75rem]'
-      : size === 'xl' ? 'text-[2.75rem] md:text-[3.25rem]' : 'text-[2rem] md:text-[2.5rem]';
+      ? size === 'xl' ? 'text-[2.25rem] md:text-[2.5rem]' : 'text-[1.5rem] md:text-[1.75rem]'
+      : size === 'xl' ? 'text-[3rem] md:text-[3.5rem]' : 'text-[2.25rem] md:text-[2.75rem]';
 
   return (
     <motion.div
@@ -169,7 +173,7 @@ interface WrappedBodyProps {
 export function WrappedBody({ children, active = true }: WrappedBodyProps) {
   return (
     <motion.p
-      className="font-mono text-[11px] md:text-xs text-foreground/55 leading-relaxed mt-4 max-w-[95%]"
+      className="font-mono text-xs md:text-[13px] text-foreground/60 leading-relaxed mt-4 max-w-[95%]"
       initial={{ opacity: 0 }}
       animate={active ? { opacity: 1 } : { opacity: 0 }}
       transition={{ delay: 0.65, duration: 0.5 }}
