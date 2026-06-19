@@ -9,7 +9,6 @@ import { DEMO_STATS } from '@/lib/recap/demo-stats';
 import { RecapDeck } from '@/components/recap/RecapDeck';
 import { useRecapPreferences } from '@/hooks/useRecapPreferences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { useRecapAudio } from '@/hooks/useRecapAudio';
 import { showToast } from '@/lib/toast';
 
 export default function RecapPage() {
@@ -144,7 +143,6 @@ export default function RecapPage() {
         isDemo={isDemo}
         prefs={prefs}
         reducedMotion={reducedMotion}
-        audioUnlocked={audioUnlocked}
         onAudioUnlock={handleAudioUnlock}
         onDeleteClick={() => setShowDeleteModal(true)}
       />
@@ -191,7 +189,6 @@ function RecapDeckWithAudio({
   isDemo,
   prefs,
   reducedMotion,
-  audioUnlocked,
   onAudioUnlock,
   onDeleteClick,
 }: {
@@ -200,13 +197,10 @@ function RecapDeckWithAudio({
   isDemo: boolean;
   prefs: ReturnType<typeof useRecapPreferences>;
   reducedMotion: boolean;
-  audioUnlocked: boolean;
   onAudioUnlock: () => void;
   onDeleteClick: () => void;
 }) {
   const [slideIndex, setSlideIndex] = useState(0);
-
-  useRecapAudio(prefs.theme, prefs.musicEnabled, slideIndex, audioUnlocked);
 
   return (
     <RecapDeck
