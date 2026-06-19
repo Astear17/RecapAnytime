@@ -176,22 +176,24 @@ export function RecapDeck({
           {pack.progressStyle === 'continuous' ? (
             <div className="absolute top-3 left-3 right-3 h-[3px] rounded-full overflow-hidden bg-white/10 z-20">
               <div
-                className="h-full rounded-full transition-all duration-100 ease-linear"
+                className="h-full rounded-full transition-all duration-100 ease-linear relative overflow-hidden"
                 style={{
                   width: `${((deck.slide + deck.progress / 100) / slides.length) * 100}%`,
-                  background: pack.glowColor,
+                  background: `linear-gradient(90deg, ${pack.glowColor}88, ${pack.glowColor})`,
                 }}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0" />
+              </div>
             </div>
           ) : (
             <div className="absolute top-3 left-0 right-0 flex px-3 gap-1 z-20">
               {slides.map((s, idx) => (
                 <div key={s.id} className="h-[3px] flex-1 rounded-full overflow-hidden bg-white/10">
                   <div
-                    className="h-full rounded-full transition-all duration-100 ease-linear"
+                    className="h-full rounded-full transition-all duration-100 ease-linear relative overflow-hidden"
                     style={{
                       width: idx === deck.slide ? `${deck.progress}%` : idx < deck.slide ? '100%' : '0%',
-                      background: s.theme.progressColor,
+                      background: `linear-gradient(90deg, ${s.theme.progressColor}88, ${s.theme.progressColor})`,
                     }}
                   />
                 </div>

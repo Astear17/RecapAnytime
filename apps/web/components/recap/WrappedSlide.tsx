@@ -149,12 +149,13 @@ interface WrappedCardProps {
 export function WrappedCard({ accent, children, active = true, delay = 0.4 }: WrappedCardProps) {
   return (
     <motion.div
-      className="rounded-xl p-4 backdrop-blur-sm border border-white/[0.08]"
+      className="rounded-xl p-4 backdrop-blur-sm border border-white/[0.08] relative overflow-hidden"
       style={{ background: `${accent}14` }}
       initial={{ opacity: 0, y: 16 }}
       animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
+      <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent}40, transparent)` }} />
       {children}
     </motion.div>
   );

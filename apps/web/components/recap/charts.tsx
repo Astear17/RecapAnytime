@@ -27,15 +27,17 @@ export function MonthlyChart({ data, accent, active = true, compact = false }: M
       {entries.map(([month, count], i) => {
         const barH = Math.max(8, Math.round((count / max) * 96));
         return (
-          <div key={month} className="flex-1 flex flex-col items-center justify-end gap-1 h-full">
+          <div key={month} className="flex-1 flex flex-col items-center justify-end gap-1 h-full group">
             <motion.div
-              className="w-full rounded-t-md"
-              style={{ background: accent }}
+              className="w-full rounded-t-md relative overflow-hidden"
+              style={{ background: `linear-gradient(to top, ${accent}88, ${accent})` }}
               initial={{ height: 0, opacity: 0.3 }}
               animate={active ? { height: barH, opacity: 1 } : { height: 0, opacity: 0.3 }}
               transition={{ delay: i * 0.08, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            />
-            <span className="font-mono text-[8px] text-foreground/40">{monthLabel(month)}</span>
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+            </motion.div>
+            <span className="font-mono text-[8px] text-foreground/40 group-hover:text-foreground/70 transition-colors">{monthLabel(month)}</span>
           </div>
         );
       })}
@@ -66,10 +68,10 @@ export function HourChart({ data, accent, highlightHour, active = true, compact 
         return (
           <motion.div
             key={hour}
-            className="flex-1 rounded-sm"
+            className="flex-1 rounded-sm relative overflow-hidden"
             style={{
-              background: isPeak ? accent : `${accent}55`,
-              boxShadow: isPeak ? `0 0 12px ${accent}66` : undefined,
+              background: isPeak ? `linear-gradient(to top, ${accent}88, ${accent})` : `${accent}55`,
+              boxShadow: isPeak ? `0 0 16px ${accent}66, 0 0 4px ${accent}33` : undefined,
             }}
             initial={{ height: 0 }}
             animate={active ? { height: barH } : { height: 0 }}
@@ -94,19 +96,21 @@ export function RankedBars({ items, accent, active = true }: RankedBarsProps) {
   return (
     <div className="space-y-2.5 mt-3">
       {items.slice(0, 5).map((item, i) => (
-        <div key={item.label} className="space-y-1">
+        <div key={item.label} className="space-y-1 group">
           <div className="flex justify-between font-mono text-[10px]">
-            <span className="text-foreground/70 truncate max-w-[70%]">{i + 1}. {item.label}</span>
+            <span className="text-foreground/70 truncate max-w-[70%] group-hover:text-foreground/90 transition-colors">{i + 1}. {item.label}</span>
             <span style={{ color: accent }}>{item.value}×</span>
           </div>
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <motion.div
-              className="h-full rounded-full"
-              style={{ background: accent }}
+              className="h-full rounded-full relative overflow-hidden"
+              style={{ background: `linear-gradient(90deg, ${accent}88, ${accent})` }}
               initial={{ width: 0 }}
               animate={active ? { width: `${(item.value / max) * 100}%` } : { width: 0 }}
               transition={{ delay: 0.2 + i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            />
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            </motion.div>
           </div>
         </div>
       ))}
@@ -129,6 +133,15 @@ export function RingProgress({ percent, accent, active = true, size = 88 }: Ring
 
   return (
     <svg width={size} height={size} className="rotate-[-90deg]">
+      <defs>
+        <filter id={`ring-glow-${size}`} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
       <circle
         cx={size / 2}
         cy={size / 2}
@@ -149,7 +162,7 @@ export function RingProgress({ percent, accent, active = true, size = 88 }: Ring
         initial={{ strokeDashoffset: circumference }}
         animate={active ? { strokeDashoffset: circumference * (1 - clamped / 100) } : { strokeDashoffset: circumference }}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-        style={{ filter: `drop-shadow(0 0 8px ${accent}55)` }}
+        filter={`url(#ring-glow-${size})`}
       />
     </svg>
   );

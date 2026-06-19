@@ -13,6 +13,12 @@ interface VinylDiscProps {
 export function VinylDisc({ accent, label, active = true, size = 96, className = '' }: VinylDiscProps) {
   return (
     <div className={`relative flex-shrink-0 ${className}`} style={{ width: size, height: size }}>
+      {/* Ambient glow */}
+      <div
+        className="absolute inset-[-20%] rounded-full opacity-30 blur-xl pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${accent}44, transparent 70%)` }}
+      />
+
       {/* Tonearm */}
       <div
         className="absolute -top-1 right-2 w-8 h-1 rounded-full origin-right z-10 opacity-60"

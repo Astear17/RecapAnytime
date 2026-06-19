@@ -35,13 +35,13 @@ export function DecorLayers({ accent, variant = 'default', active = true }: Deco
 
       <motion.div
         className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none opacity-20"
-        style={{ background: `radial-gradient(circle, ${accent} 0%, transparent 70%)` }}
+        style={{ background: `radial-gradient(circle, ${accent} 0%, ${accent}44 40%, transparent 70%)` }}
         animate={{ scale: [1, 1.15, 1], rotate: [0, 90, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
         className="absolute bottom-10 -left-8 w-24 h-24 rounded-full border pointer-events-none opacity-30"
-        style={{ borderColor: accent }}
+        style={{ borderColor: `${accent}66` }}
         animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
