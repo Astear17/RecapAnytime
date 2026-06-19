@@ -181,12 +181,12 @@ export default function UploadPage() {
           <div
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-sm p-12 text-center transition-all ${
+            className={`dropzone-animated p-12 text-center ${
               uploadState === 'selected'
-                ? 'border-accent-green bg-panel/30'
+                ? 'active'
                 : uploadState === 'error'
-                ? 'border-accent-red bg-accent-red/5'
-                : 'border-panel-border hover:border-accent-cyan hover:bg-panel/10'
+                ? 'error'
+                : ''
             }`}
           >
             <input
@@ -221,9 +221,9 @@ export default function UploadPage() {
 
               {/* Progress Bar */}
               {uploadState === 'uploading' && (
-                <div className="w-full bg-[#121212] h-2 rounded-full overflow-hidden border border-panel-border max-w-xs mt-2">
+                <div className="w-full bg-[#121212] h-2 rounded-full overflow-hidden border border-panel-border max-w-xs mt-2 progress-bar-animated">
                   <div
-                    className="bg-accent-cyan h-full transition-all duration-300"
+                    className="bg-gradient-to-r from-accent-cyan to-accent-green h-full transition-all duration-300 rounded-full"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -254,8 +254,9 @@ export default function UploadPage() {
 
         {/* Success / Done State */}
         {uploadState === 'done' && (
-          <div className="space-y-6">
-            <div className="bg-panel border border-accent-green/30 p-6 rounded-sm space-y-4">
+          <div className="space-y-6 animate-scale-in">
+            <div className="bg-panel border border-accent-green/30 p-6 rounded-sm space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-green to-transparent" />
               <div className="flex items-center space-x-3 text-accent-green">
                 <CheckCircle className="h-6 w-6" />
                 <span className="font-bold text-lg">Recap Compiled Successfully!</span>
@@ -281,7 +282,7 @@ export default function UploadPage() {
               <div className="pt-2">
                 <Link
                   href={`/recap/${recapId}`}
-                  className="flex items-center justify-center space-x-2 bg-accent-cyan hover:bg-[#1fdad5] text-background px-6 py-3 font-bold rounded-sm transition-all text-center w-full"
+                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-accent-cyan to-accent-green hover:from-[#1fdad5] hover:to-[#6be45d] text-background px-6 py-3 font-bold rounded-sm transition-all text-center w-full shadow-lg shadow-accent-cyan/20"
                 >
                   <span>Launch Interactive Recap</span>
                   <ArrowRight className="h-4 w-4" />
