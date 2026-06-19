@@ -178,7 +178,7 @@ export default function Home() {
           <div className="flex justify-center lg:justify-end">
             <div className="relative animate-float">
               <div
-                className="absolute inset-0 blur-3xl opacity-30 rounded-full"
+                className="absolute inset-0 blur-3xl opacity-40 rounded-full animate-glow-pulse"
                 style={{ background: currentSlide.accent }}
               />
 
@@ -253,12 +253,14 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {FEATURES.map((feature) => (
+            {FEATURES.map((feature, idx) => (
               <div
                 key={feature.title}
-                className={`wrapped-card p-8 bg-gradient-to-br ${feature.gradient}`}
+                className={`wrapped-card p-8 bg-gradient-to-br ${feature.gradient} group`}
+                style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                <feature.icon className="h-7 w-7 mb-5" style={{ color: feature.accent }} />
+                <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${feature.accent}, transparent)` }} />
+                <feature.icon className="h-7 w-7 mb-5 transition-transform duration-300 group-hover:scale-110" style={{ color: feature.accent }} />
                 <h3 className="font-display font-bold text-xl text-foreground mb-2">{feature.title}</h3>
                 <p className="font-sans text-sm text-foreground/55 leading-relaxed">{feature.desc}</p>
               </div>
@@ -278,13 +280,15 @@ export default function Home() {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {STEPS.map((step) => (
+            {STEPS.map((step, idx) => (
               <div
                 key={step.num}
-                className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-colors"
+                className="group relative p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.05]"
+                style={{ animationDelay: `${idx * 0.08}s` }}
               >
+                <div className="absolute left-0 top-4 bottom-4 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: step.color }} />
                 <span
-                  className="font-display text-4xl font-bold opacity-20 group-hover:opacity-40 transition-opacity"
+                  className="font-display text-4xl font-bold opacity-20 group-hover:opacity-50 transition-opacity duration-300"
                   style={{ color: step.color }}
                 >
                   {step.num}
@@ -308,7 +312,7 @@ export default function Home() {
             {FAQ_ITEMS.map((faq, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden"
+                className={`faq-item rounded-2xl bg-white/[0.03] border border-white/[0.06] overflow-hidden ${openFaq === idx ? 'open' : ''}`}
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
