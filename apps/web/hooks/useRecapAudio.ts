@@ -96,7 +96,12 @@ export function useRecapAudio(
     lastSlideRef.current = slideIndex;
   }, [slideIndex, playStinger]);
 
-  useEffect(() => () => stopPad(), [stopPad]);
+  useEffect(() => () => {
+    stopPad();
+    if (ctxRef.current && ctxRef.current.state !== 'closed') {
+      ctxRef.current.close().catch(() => {});
+    }
+  }, [stopPad]);
 
   const unlock = useCallback(async () => {
     const ctx = getCtx();
