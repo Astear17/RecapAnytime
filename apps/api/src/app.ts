@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import uploadRouter from './routes/upload';
 import recapRouter from './routes/recap';
+import proxyImageRouter from './routes/proxy-image';
 
 dotenv.config();
 
@@ -52,6 +53,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/upload', uploadRouter);
 app.use('/api/recap', recapRouter);
+app.use('/api/proxy-image', proxyImageRouter);
 
 app.listen(port, () => {
   console.log(`[RecapAnytime API] Server is running on port ${port}`);

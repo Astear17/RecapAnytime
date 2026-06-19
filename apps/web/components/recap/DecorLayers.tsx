@@ -1,6 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '@/lib/api';
+
+function proxyImageUrl(url: string | null): string | null {
+  if (!url) return null;
+  if (url.startsWith('data:') || url.startsWith('/')) return url;
+  return `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
+}
 
 interface DecorLayersProps {
   accent: string;
@@ -96,6 +103,7 @@ interface ProfileRingProps {
 
 export function ProfileRing({ photoUrl, accent, active = true, displayName }: ProfileRingProps) {
   const initial = displayName?.charAt(0)?.toUpperCase() || '?';
+  const proxiedUrl = proxyImageUrl(photoUrl);
 
   return (
     <div className="relative w-24 h-24 mb-4">
@@ -111,9 +119,9 @@ export function ProfileRing({ photoUrl, accent, active = true, displayName }: Pr
         animate={active ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        {photoUrl ? (
+        {proxiedUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={photoUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" crossOrigin="anonymous" />
+          <img src={proxiedUrl} alt="" className="w-full h-full object-cover" />
         ) : (
           <span className="font-display text-3xl font-bold" style={{ color: accent }}>
             {initial}
