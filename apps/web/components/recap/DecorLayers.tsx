@@ -113,7 +113,7 @@ export function ProfileRing({ photoUrl, accent, active = true, displayName }: Pr
       >
         {photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+          <img src={photoUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" crossOrigin="anonymous" />
         ) : (
           <span className="font-display text-3xl font-bold" style={{ color: accent }}>
             {initial}
