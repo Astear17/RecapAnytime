@@ -16,20 +16,20 @@ const DEMO_RECEIPT: ReceiptData = {
   periodStart: '2025-12-08',
   periodEnd: '2026-06-08',
   lineItems: [
-    { label: 'WATCHED VIDEOS', value: 67302 },
-    { label: 'EST. WATCH TIME', value: '560h 51m' },
-    { label: 'WATCH SESSIONS', value: 2470 },
-    { label: 'LIKED VIDEOS', value: 6000 },
-    { label: 'COMMENTS', value: 732 },
-    { label: 'SHARES', value: 3560 },
-    { label: 'REPOSTS', value: 10640 },
-    { label: 'SEARCHES', value: 2474 },
-    { label: 'LIVE SESSIONS', value: 394 },
+    { label: 'VIDEO ĐÃ XEM', value: 67302 },
+    { label: 'THỜI GIAN XEM', value: '560h 51m' },
+    { label: 'PHIÊN LƯỚT', value: 2470 },
+    { label: 'TIM ĐÃ THẢ', value: 6000 },
+    { label: 'BÌNH LUẬN', value: 732 },
+    { label: 'CHIA SẺ', value: 3560 },
+    { label: 'REPOST', value: 10640 },
+    { label: 'TÌM KIẾM', value: 2474 },
+    { label: 'PHÒNG LIVE', value: 394 },
   ],
   spendingLines: [
-    { label: 'SHOP ORDERS', value: 25 },
-    { label: 'COMPLETED ORDERS', value: 23 },
-    { label: 'EST. SPEND', value: '2.456.000 VND' },
+    { label: 'ĐƠN HÀNG', value: 25 },
+    { label: 'HOÀN THÀNH', value: 23 },
+    { label: 'TỔNG CHI', value: '2.456.000 VND' },
   ],
   topSearches: [
     { term: 'lofi music', count: 48 },
@@ -46,7 +46,7 @@ const DEMO_RECEIPT: ReceiptData = {
     score: 8,
     reasons: ['Giờ hoạt động mạnh nhất của bạn rơi vào khoảng đêm muộn.'],
   },
-  footerText: 'Thank you for scrolling.',
+  footerText: 'Cảm ơn bạn đã lướt dạo cùng chúng tôi.',
 };
 
 export default function ReceiptPageContent() {
@@ -172,21 +172,21 @@ export default function ReceiptPageContent() {
 
         <div className="text-[11px] space-y-1">
           <div className="flex justify-between">
-            <span className="text-[#555555]">ACCOUNT</span>
+            <span className="text-[#555555]">TÀI KHOẢN</span>
             <span className="font-bold">{receipt.accountLabel}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#555555]">PERIOD</span>
+            <span className="text-[#555555]">THỜI GIAN</span>
             <span className="font-bold">
               {receipt.periodStart || '—'} → {receipt.periodEnd || '—'}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#555555]">GENERATED</span>
+            <span className="text-[#555555]">TẠO LÚC</span>
             <span>{new Date(receipt.generatedAt).toLocaleString('vi-VN')}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#555555]">TICKET ID</span>
+            <span className="text-[#555555]">MÃ HÓA ĐƠN</span>
             <span>{receipt.receiptId}</span>
           </div>
         </div>
@@ -194,8 +194,8 @@ export default function ReceiptPageContent() {
         <div className="border-t border-dashed border-[#888888] my-4" />
 
         <div className="text-[10px] font-bold flex justify-between text-[#444444]">
-          <span>ITEM</span>
-          <span>QTY</span>
+          <span>CHỈ SỐ</span>
+          <span>GIÁ TRỊ</span>
         </div>
         <div className="border-t border-dashed border-[#aaaaaa] my-1" />
 
@@ -210,7 +210,7 @@ export default function ReceiptPageContent() {
 
         <div className="border-t border-dashed border-[#888888] my-4" />
 
-        <div className="text-[10px] font-bold text-[#444444]">XẢ TIỀN SUMMARY</div>
+        <div className="text-[10px] font-bold text-[#444444]">CHI TIÊU</div>
         <div className="border-t border-dashed border-[#aaaaaa] my-1" />
 
         <div className="space-y-1 text-xs">
@@ -224,7 +224,7 @@ export default function ReceiptPageContent() {
 
         <div className="border-t border-dashed border-[#888888] my-4" />
 
-        <div className="text-[10px] font-bold text-[#444444]">TOP SEARCHES</div>
+        <div className="text-[10px] font-bold text-[#444444]">TÌM KIẾM HÀNG ĐẦU</div>
         <div className="border-t border-dashed border-[#aaaaaa] my-1" />
         <div className="space-y-1 text-xs">
           {receipt.topSearches.length > 0 ? (
@@ -235,13 +235,13 @@ export default function ReceiptPageContent() {
               </div>
             ))
           ) : (
-            <div className="text-[#888] text-[11px]">No search queries logged.</div>
+            <div className="text-[#888] text-[11px]">Không có tìm kiếm nào.</div>
           )}
         </div>
 
         <div className="border-t border-dashed border-[#888888] my-4" />
 
-        <div className="text-[10px] font-bold text-[#444444]">PERSONA RESULT</div>
+        <div className="text-[10px] font-bold text-[#444444]">KẾT QUẢ PERSONA</div>
         <div className="border-t border-dashed border-[#aaaaaa] my-1" />
         <div className="text-xs space-y-1 text-center py-2 bg-[#eae7de] border border-[#d6d2c4]">
           <p className="font-extrabold tracking-tight">{receipt.persona.title}</p>

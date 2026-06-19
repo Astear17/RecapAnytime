@@ -23,22 +23,34 @@ export function generateReceiptData(
 
   // Primary lines
   const lineItems = [
-    { label: 'WATCHED VIDEOS', value: watch.totalVideos },
-    { label: 'EST. WATCH TIME', value: formatDuration(watch.estimatedWatchSeconds) },
-    { label: 'WATCH SESSIONS', value: watch.sessionCount },
-    { label: 'LIKED VIDEOS', value: engagement.totalLikes },
-    { label: 'COMMENTS', value: engagement.totalComments },
-    { label: 'SHARES', value: engagement.totalShares },
-    { label: 'REPOSTS', value: engagement.totalReposts },
-    { label: 'SEARCHES', value: searches.totalSearches },
-    { label: 'LIVE SESSIONS', value: live.totalGoLiveSessions + live.watchedLiveRoomsCount }
+    { label: 'VIDEO ĐÃ XEM', value: watch.totalVideos },
+    { label: 'THỜI GIAN XEM', value: formatDuration(watch.estimatedWatchSeconds) },
+    { label: 'PHIÊN LƯỚT', value: watch.sessionCount },
+    { label: 'TIM ĐÃ THẢ', value: engagement.totalLikes },
+    { label: 'BÌNH LUẬN', value: engagement.totalComments },
+    { label: 'CHIA SẺ', value: engagement.totalShares },
+    { label: 'REPOST', value: engagement.totalReposts },
+    { label: 'TÌM KIẾM', value: searches.totalSearches },
+    { label: 'PHÒNG LIVE', value: live.totalGoLiveSessions + live.watchedLiveRoomsCount }
   ];
 
-  // Spending line items
   const spendingLines: Array<{ label: string; value: string | number }> = [];
   if (spending.orderCount > 0) {
-    spendingLines.push({ label: 'SHOP ORDERS', value: spending.orderCount });
-    spendingLines.push({ label: 'COMPLETED ORDERS', value: spending.completedOrderCount });
+    spendingLines.push({ label: 'ĐƠN HÀNG', value: spending.orderCount });
+    spendingLines.push({ label: 'HOÀN THÀNH', value: spending.completedOrderCount });
+  }
+  if (spending.totalSpendVnd) {
+    const formattedVnd = new Intl.NumberFormat('vi-VN').format(spending.totalSpendVnd);
+    spendingLines.push({ label: 'TỔNG CHI', value: `${formattedVnd} VND` });
+  } else {
+    spendingLines.push({ label: 'TỔNG CHI', value: '0 VND' });
+  }
+
+  if (spending.coinRechargeCount > 0 && spending.totalCoinsRecharged) {
+    spendingLines.push({ label: 'COIN ĐÃ NẠP', value: spending.totalCoinsRecharged });
+  }
+  if (spending.giftSentCount > 0) {
+    spendingLines.push({ label: 'QUÀ ĐÃ TẶNG', value: spending.giftSentCount });
   }
   if (spending.totalSpendVnd) {
     const formattedVnd = new Intl.NumberFormat('vi-VN').format(spending.totalSpendVnd);
@@ -66,7 +78,7 @@ export function generateReceiptData(
     spendingLines,
     topSearches,
     persona,
-    footerText: 'Thank you for scrolling.'
+    footerText: 'Cảm ơn bạn đã lướt dạo cùng chúng tôi.'
   };
 }
 

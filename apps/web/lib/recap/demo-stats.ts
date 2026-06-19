@@ -109,6 +109,6 @@ export const DEMO_STATS: RecapStats = {
     spendingLines: [],
     topSearches: [],
     persona: { id: 'night', title: 'Night Scroller', subtitle: 'Kẻ Gác Đêm', description: '', score: 8, reasons: [] },
-    footerText: 'Thank you for scrolling.',
+    footerText: 'Cảm ơn bạn đã lướt dạo cùng chúng tôi.',
   },
 };
