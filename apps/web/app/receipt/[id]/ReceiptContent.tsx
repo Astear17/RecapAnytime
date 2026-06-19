@@ -7,6 +7,7 @@ import { Printer, ChevronLeft, Download, ImageIcon, Share2 } from 'lucide-react'
 import { fetchApi } from '@/lib/api';
 import { ReceiptData } from '@recapanytime/shared';
 import { exportReceiptAsPng } from '@/lib/export-receipt';
+import { showToast } from '@/lib/toast';
 
 const DEMO_RECEIPT: ReceiptData = {
   receiptId: 'RC-20260609-8472',
@@ -93,7 +94,7 @@ export default function ReceiptPageContent() {
         `recapanytime-receipt-${receipt.receiptId}.png`
       );
     } catch {
-      alert('Không thể xuất ảnh. Thử lại sau.');
+      showToast('Không thể xuất ảnh. Thử lại sau.');
     } finally {
       setExporting(false);
     }
@@ -283,7 +284,7 @@ export default function ReceiptPageContent() {
         <button
           onClick={() => {
             navigator.clipboard.writeText(`${window.location.origin}/recap/${recapId}`);
-            alert('Đã copy link recap!');
+            showToast('Đã copy link recap!');
           }}
           className="flex items-center gap-2 text-xs text-muted hover:text-foreground transition-colors"
         >

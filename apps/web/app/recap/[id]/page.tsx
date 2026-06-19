@@ -10,6 +10,7 @@ import { RecapDeck } from '@/components/recap/RecapDeck';
 import { useRecapPreferences } from '@/hooks/useRecapPreferences';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useRecapAudio } from '@/hooks/useRecapAudio';
+import { showToast } from '@/lib/toast';
 
 export default function RecapPage() {
   const params = useParams();
@@ -100,13 +101,13 @@ export default function RecapPage() {
       });
       const data = await response.json();
       if (data.ok) {
-        alert('Recap deleted permanently.');
+        showToast('Recap deleted permanently.');
         router.push('/');
       } else {
-        alert(data.error?.message || 'Invalid delete token');
+        showToast(data.error?.message || 'Invalid delete token');
       }
     } catch {
-      alert('Network error. Failed to delete.');
+      showToast('Network error. Failed to delete.');
     } finally {
       setDeleting(false);
     }
