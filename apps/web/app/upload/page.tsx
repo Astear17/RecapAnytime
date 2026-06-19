@@ -5,15 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Upload, FileCode, CheckCircle, AlertOctagon, Terminal, Trash2, ArrowRight } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/api';
+import { useLanguage, t } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/LanguageToggle';
 
 type UploadState =
   | 'idle'
   | 'selected'
   | 'uploading'
-  | 'extracting_zip'
-  | 'parsing_json'
-  | 'calculating_stats'
-  | 'creating_recap'
+  | 'parsing'
   | 'done'
   | 'error';
 
@@ -26,6 +25,7 @@ export default function UploadPage() {
   const [deleteToken, setDeleteToken] = useState('');
   const [recapId, setRecapId] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { lang, toggle } = useLanguage();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -71,28 +71,27 @@ export default function UploadPage() {
     if (!file) return;
 
     setUploadState('uploading');
-    setProgress(10);
+    setProgress(0);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      // Simulate state progression for UI feel
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(interval);
-            return 90;
-          }
-          return prev + 15;
-        });
-      }, 300);
-
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `${API_BASE_URL}/api/upload`, true);
 
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+          setProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+
+      xhr.upload.onload = () => {
+        setUploadState('parsing');
+        setProgress(0);
+      };
+
       xhr.onload = () => {
-        clearInterval(interval);
         if (xhr.status === 200) {
           setProgress(100);
           try {
@@ -121,7 +120,6 @@ export default function UploadPage() {
       };
 
       xhr.onerror = () => {
-        clearInterval(interval);
         setUploadState('error');
         setErrorMessage('Network error. Make sure backend is running.');
       };
@@ -137,23 +135,17 @@ export default function UploadPage() {
   const getStatusText = () => {
     switch (uploadState) {
       case 'idle':
-        return 'Drag & drop your ZIP/JSON export';
+        return t('Kéo thả file ZIP/JSON vào đây', 'Drag & drop your ZIP/JSON export', lang);
       case 'selected':
-        return `Selected: ${file?.name}`;
+        return `${t('Đã chọn', 'Selected', lang)}: ${file?.name}`;
       case 'uploading':
-        return `Uploading file... ${progress}%`;
-      case 'extracting_zip':
-        return 'Extracting archive zip...';
-      case 'parsing_json':
-        return 'Parsing user_data_tiktok.json...';
-      case 'calculating_stats':
-        return 'Running statistics aggregator...';
-      case 'creating_recap':
-        return 'Preparing story boards...';
+        return `${t('Đang tải file lên', 'Uploading file', lang)}... ${progress}%`;
+      case 'parsing':
+        return t('Đang phân tích dữ liệu TikTok...', 'Parsing TikTok data...', lang);
       case 'done':
-        return 'Recap compilation complete!';
+        return t('Recap đã sẵn sàng!', 'Recap compiled!', lang);
       case 'error':
-        return 'Parsing process crashed';
+        return t('Có lỗi xảy ra', 'An error occurred', lang);
     }
   };
 
@@ -164,15 +156,21 @@ export default function UploadPage() {
           <Terminal className="h-5 w-5 text-accent-cyan" />
           <Link href="/" className="font-bold text-foreground">RecapAnytime</Link>
         </div>
-        <span className="text-xs text-muted">/upload_manager</span>
+        <div className="flex items-center gap-2">
+          <LanguageToggle lang={lang} onToggle={toggle} />
+          <span className="text-xs text-muted">/upload_manager</span>
+        </div>
       </header>
 
       <main className="space-y-8">
         <div className="space-y-2">
-          <h1 className="text-xl font-bold text-foreground">Parser Terminal</h1>
+          <h1 className="text-xl font-bold text-foreground">{t('Trình phân tích', 'Parser Terminal', lang)}</h1>
           <p className="text-xs text-muted leading-relaxed">
-            Upload your `user_data_tiktok.json` or standard `.zip` file from TikTok. Max file size: 100MB. 
-            Raw files are parsed immediately in memory and are never saved permanently.
+            {t(
+              'Tải lên file `user_data_tiktok.json` hoặc `.zip` từ TikTok. Tối đa 100MB. File chỉ xử lý trong RAM, không lưu trữ vĩnh viễn.',
+              'Upload your `user_data_tiktok.json` or standard `.zip` file from TikTok. Max 100MB. Files are parsed in memory and never stored permanently.',
+              lang
+            )}
           </p>
         </div>
 
@@ -208,24 +206,43 @@ export default function UploadPage() {
                 <p className="font-bold text-foreground">{getStatusText()}</p>
                 {!file && (
                   <p className="text-xs text-muted">
-                    or{' '}
+                    {t('hoặc', 'or', lang)}{' '}
                     <button
                       onClick={() => fileInputRef.current?.click()}
                       className="text-accent-cyan underline hover:text-cyan-400"
                     >
-                      browse local drive
+                      {t('chọn từ máy', 'browse local drive', lang)}
                     </button>
                   </p>
                 )}
               </div>
 
-              {/* Progress Bar */}
+              {/* Upload Progress Bar */}
               {uploadState === 'uploading' && (
-                <div className="w-full bg-[#121212] h-2 rounded-full overflow-hidden border border-panel-border max-w-xs mt-2 progress-bar-animated">
-                  <div
-                    className="bg-gradient-to-r from-accent-cyan to-accent-green h-full transition-all duration-300 rounded-full"
-                    style={{ width: `${progress}%` }}
-                  />
+                <div className="w-full space-y-1 max-w-xs mt-2">
+                  <div className="flex justify-between font-mono text-[10px] text-muted">
+                    <span>{t('Đang tải lên', 'Uploading', lang)}</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="w-full bg-[#121212] h-2 rounded-full overflow-hidden border border-panel-border progress-bar-animated">
+                    <div
+                      className="bg-gradient-to-r from-accent-cyan to-accent-green h-full transition-all duration-300 rounded-full"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Parsing Progress */}
+              {uploadState === 'parsing' && (
+                <div className="w-full space-y-1 max-w-xs mt-2">
+                  <div className="flex items-center gap-2 font-mono text-[10px]">
+                    <div className="w-3 h-3 border-2 border-accent-cyan border-t-transparent rounded-full animate-spin" />
+                    <span className="text-accent-cyan">{t('Đang phân tích dữ liệu...', 'Analyzing data...', lang)}</span>
+                  </div>
+                  <div className="w-full bg-[#121212] h-2 rounded-full overflow-hidden border border-panel-border">
+                    <div className="bg-accent-cyan h-full rounded-full animate-pulse" style={{ width: '100%' }} />
+                  </div>
                 </div>
               )}
 
@@ -234,7 +251,7 @@ export default function UploadPage() {
                   onClick={triggerUpload}
                   className="bg-accent-green hover:bg-[#6be45d] text-background px-6 py-2 font-bold rounded-sm transition-all"
                 >
-                  Parse TikTok Export
+                  {t('Phân tích dữ liệu TikTok', 'Parse TikTok Export', lang)}
                 </button>
               )}
             </div>
@@ -246,7 +263,7 @@ export default function UploadPage() {
           <div className="bg-panel border border-accent-red/30 p-4 rounded-sm flex items-start space-x-3 text-xs">
             <AlertOctagon className="h-5 w-5 text-accent-red flex-shrink-0" />
             <div className="space-y-1">
-              <p className="font-bold text-accent-red">Error Code: PARSE_CRASH</p>
+              <p className="font-bold text-accent-red">{t('Lỗi phân tích', 'Parse Error', lang)}</p>
               <p className="text-muted leading-normal">{errorMessage}</p>
             </div>
           </div>
@@ -259,20 +276,20 @@ export default function UploadPage() {
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-green to-transparent" />
               <div className="flex items-center space-x-3 text-accent-green">
                 <CheckCircle className="h-6 w-6" />
-                <span className="font-bold text-lg">Recap Compiled Successfully!</span>
+                <span className="font-bold text-lg">{t('Recap đã sẵn sàng!', 'Recap Compiled!', lang)}</span>
               </div>
               <p className="text-xs text-muted leading-relaxed">
-                Your TikTok export data has been processed, and derived stats are stored. You can now view your story.
+                {t('Dữ liệu TikTok của bạn đã được phân tích. Bạn có thể xem recap ngay bây giờ.', 'Your TikTok export data has been processed. You can now view your recap.', lang)}
               </p>
 
               {/* Deletion Token Notification */}
               <div className="border border-panel-border bg-[#0a0a0a] p-4 rounded-sm space-y-2">
                 <div className="flex items-center space-x-2 text-accent-red font-bold text-xs">
                   <Trash2 className="h-4 w-4" />
-                  <span>CRITICAL PRIVACY WARNING - DELETION TOKEN</span>
+                  <span>{t('MÃ XÓA DỮ LIỆU - QUAN TRỌNG', 'DELETION TOKEN - IMPORTANT', lang)}</span>
                 </div>
                 <p className="text-[11px] text-muted">
-                  Use this token to delete your recap permanently. It will not be shown again:
+                  {t('Dùng mã này để xóa vĩnh viễn recap. Mã sẽ không hiển thị lại:', 'Use this token to delete your recap permanently. It will not be shown again:', lang)}
                 </p>
                 <div className="bg-[#121212] p-2 border border-panel-border font-mono text-center text-base font-bold text-foreground select-all rounded-sm tracking-wide">
                   {deleteToken}
@@ -284,7 +301,7 @@ export default function UploadPage() {
                   href={`/recap/${recapId}`}
                   className="flex items-center justify-center space-x-2 bg-gradient-to-r from-accent-cyan to-accent-green hover:from-[#1fdad5] hover:to-[#6be45d] text-background px-6 py-3 font-bold rounded-sm transition-all text-center w-full shadow-lg shadow-accent-cyan/20"
                 >
-                  <span>Launch Interactive Recap</span>
+                  <span>{t('Xem Recap', 'Launch Recap', lang)}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

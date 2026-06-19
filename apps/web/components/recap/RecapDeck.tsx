@@ -19,6 +19,8 @@ import { useRecapDeck } from '@/hooks/useRecapDeck';
 import { ConfettiCanvas } from './ConfettiCanvas';
 import { RecapControls, RecapSettingsButton } from './RecapControls';
 import { RecapSoundtrack } from './RecapSoundtrack';
+import { useLanguage } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/LanguageToggle';
 
 interface RecapDeckProps {
   stats: RecapStats;
@@ -69,6 +71,7 @@ export function RecapDeck({
   const [aspect, setAspect] = useState<AspectRatio>('story');
   const [showPrefs, setShowPrefs] = useState(false);
   const pack = getThemePack(theme);
+  const { lang, toggle: toggleLang } = useLanguage();
 
   const slideCount = useMemo(() => getEligibleSlideCount(stats), [stats]);
 
@@ -152,6 +155,7 @@ export function RecapDeck({
         </div>
 
         <div className="flex items-center gap-1">
+          <LanguageToggle lang={lang} onToggle={toggleLang} />
           <RecapSettingsButton onClick={() => setShowPrefs(true)} />
           <button onClick={deck.togglePause} className="p-2 rounded-full hover:bg-white/5 transition-colors">
             {deck.isPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}

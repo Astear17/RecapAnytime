@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { DEMO_STATS } from '@/lib/recap/demo-stats';
 import { getPreviewMetadata } from '@/lib/recap/build-slides';
+import { useLanguage, t } from '@/hooks/useLanguage';
+import { LanguageToggle } from '@/components/LanguageToggle';
 
 const PREVIEW_SLIDES = getPreviewMetadata(DEMO_STATS, 'tiktok');
 const PREVIEW_ICONS = [Eye, Heart, Search, ShoppingBag, Sparkles];
@@ -55,28 +57,38 @@ const FEATURES = [
     icon: Shield,
     gradient: 'from-[#0a2e16] to-[#0a1a0a]',
     accent: '#1db954',
-    title: 'Bảo mật tuyệt đối',
-    desc: 'Dữ liệu thô xử lý trong RAM, chỉ lưu thống kê tổng hợp. Không ai thấy dữ liệu riêng của bạn.',
+    title: { vi: 'Bảo mật tuyệt đối', en: 'Privacy First' },
+    desc: {
+      vi: 'Dữ liệu thô xử lý trong RAM, chỉ lưu thống kê tổng hợp. Không ai thấy dữ liệu riêng của bạn.',
+      en: 'Raw data processed in RAM, only aggregate stats stored. Nobody sees your private data.',
+    },
   },
   {
     icon: Zap,
     gradient: 'from-[#0a1a2e] to-[#0a0a1a]',
     accent: '#25f4ee',
-    title: 'Phân tích sâu sắc',
-    desc: 'Thời gian xem, phiên lướt, bình luận, chia sẻ, tìm kiếm, livestream, mua sắm — tất cả trong một recap.',
+    title: { vi: 'Phân tích sâu sắc', en: 'Rich Insights' },
+    desc: {
+      vi: 'Thời gian xem, phiên lướt, bình luận, chia sẻ, tìm kiếm, livestream, mua sắm — tất cả trong một recap.',
+      en: 'Watch time, sessions, comments, shares, searches, livestream, shopping — all in one recap.',
+    },
   },
   {
     icon: Receipt,
     gradient: 'from-[#2d0a0a] to-[#1a0a0a]',
     accent: '#ff3b5c',
-    title: 'Receiptify cá nhân',
-    desc: 'Hóa đơn recap dạng thermal receipt — screenshot và chia sẻ lên mạng xã hội ngay.',
+    title: { vi: 'Receiptify cá nhân', en: 'Personal Receiptify' },
+    desc: {
+      vi: 'Hóa đơn recap dạng thermal receipt — screenshot và chia sẻ lên mạng xã hội ngay.',
+      en: 'Thermal receipt-style recap — screenshot and share on social media instantly.',
+    },
   },
 ];
 
 export default function Home() {
   const [mockSlide, setMockSlide] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { lang, toggle } = useLanguage();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -100,7 +112,8 @@ export default function Home() {
           <span className="font-display text-lg font-bold tracking-tight">
             Recap<span className="text-accent-red">Anytime</span>
           </span>
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-3">
+            <LanguageToggle lang={lang} onToggle={toggle} />
             <Link
               href="/upload"
               className="font-display text-sm font-medium text-muted hover:text-foreground transition-colors hidden sm:block"
@@ -124,17 +137,21 @@ export default function Home() {
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] font-mono text-[11px] text-muted">
               <span className="status-led status-led-cyan" />
-              DỮ LIỆU CỦA BẠN. RECAP CỦA BẠN.
+              {t('DỮ LIỆU CỦA BẠN. RECAP CỦA BẠN.', 'YOUR DATA. YOUR RECAP.', lang)}
             </div>
 
             <div className="space-y-5">
               <h1 className="text-[2.75rem] md:text-[3.75rem] lg:text-[4rem] font-display font-bold tracking-tight leading-[1.02]">
-                TikTok của bạn,
+                {t('TikTok của bạn,', 'Your TikTok,', lang)}
                 <br />
-                <span className="shimmer-text">gói gọn trong vài slide.</span>
+                <span className="shimmer-text">{t('gói gọn trong vài slide.', 'wrapped anytime.', lang)}</span>
               </h1>
               <p className="text-muted text-base md:text-lg leading-relaxed max-w-md font-sans">
-                Biến dữ liệu export TikTok thành recap cá nhân hóa — phong cách Spotify Wrapped. Mỗi con số, mỗi thói quen, mỗi bất ngờ.
+                {t(
+                  'Biến dữ liệu export TikTok thành recap cá nhân hóa — phong cách Spotify Wrapped. Mỗi con số, mỗi thói quen, mỗi bất ngờ.',
+                  'Turn your TikTok export into a personalized recap — Spotify Wrapped style. Every number, every habit, every surprise.',
+                  lang
+                )}
               </p>
             </div>
 
@@ -144,7 +161,7 @@ export default function Home() {
                 className="group btn-wrapped-primary flex items-center justify-center gap-2.5 text-white px-8 py-4 rounded-full font-display font-semibold text-sm"
               >
                 <Upload className="h-4 w-4" />
-                Bắt đầu recap
+                {t('Bắt đầu recap', 'Start recap', lang)}
                 <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
               </Link>
               <Link
@@ -152,16 +169,15 @@ export default function Home() {
                 className="btn-wrapped-secondary flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-display font-semibold text-sm text-foreground"
               >
                 <Play className="h-4 w-4" />
-                Xem demo
+                {t('Xem demo', 'View demo', lang)}
               </Link>
             </div>
 
-            {/* Quick stats strip */}
             <div className="flex flex-wrap gap-3 pt-2">
               {[
-                { label: 'Tối đa 17 slide', color: '#ff3b5c' },
-                { label: 'Bảo mật tuyệt đối', color: '#1db954' },
-                { label: 'Xuất hóa đơn PNG', color: '#25f4ee' },
+                { label: t('Tối đa 17 slide', 'Up to 17 slides', lang), color: '#ff3b5c' },
+                { label: t('Bảo mật tuyệt đối', 'Privacy-first', lang), color: '#1db954' },
+                { label: t('Xuất hóa đơn PNG', 'Receipt export', lang), color: '#25f4ee' },
               ].map((tag) => (
                 <span
                   key={tag.label}
@@ -228,7 +244,7 @@ export default function Home() {
                   </div>
 
                   <div className="relative z-10 flex items-center justify-center gap-2 text-[10px] font-mono text-foreground/25">
-                    <span>chạm để tiếp tục</span>
+                    <span>{t('chạm để tiếp tục', 'tap to continue', lang)}</span>
                     <ArrowRight className="h-3 w-3" />
                   </div>
                 </div>
@@ -246,23 +262,23 @@ export default function Home() {
       <section className="relative z-10 border-t border-white/[0.05]">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            Mọi thứ bạn cần
+            {t('Mọi thứ bạn cần', 'Everything you need', lang)}
           </h2>
           <p className="font-mono text-xs text-muted mb-12 max-w-md">
-            Recap đầy đủ, bảo mật, và có thể chia sẻ — không cần chờ cuối năm.
+            {t('Recap đầy đủ, bảo mật, và có thể chia sẻ — không cần chờ cuối năm.', 'Full recap, secure, and shareable — no need to wait until year end.', lang)}
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {FEATURES.map((feature, idx) => (
               <div
-                key={feature.title}
+                key={feature.title.vi}
                 className={`wrapped-card p-8 bg-gradient-to-br ${feature.gradient} group`}
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
                 <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(90deg, transparent, ${feature.accent}, transparent)` }} />
                 <feature.icon className="h-7 w-7 mb-5 transition-transform duration-300 group-hover:scale-110" style={{ color: feature.accent }} />
-                <h3 className="font-display font-bold text-xl text-foreground mb-2">{feature.title}</h3>
-                <p className="font-sans text-sm text-foreground/55 leading-relaxed">{feature.desc}</p>
+                <h3 className="font-display font-bold text-xl text-foreground mb-2">{t(feature.title.vi, feature.title.en, lang)}</h3>
+                <p className="font-sans text-sm text-foreground/55 leading-relaxed">{t(feature.desc.vi, feature.desc.en, lang)}</p>
               </div>
             ))}
           </div>
@@ -273,10 +289,10 @@ export default function Home() {
       <section className="relative z-10 border-t border-white/[0.05]">
         <div className="max-w-6xl mx-auto px-6 py-20 md:py-24">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-3">
-            Lấy dữ liệu TikTok
+            {t('Lấy dữ liệu TikTok', 'Get your TikTok data', lang)}
           </h2>
           <p className="font-mono text-xs text-muted mb-12 max-w-lg">
-            TikTok cung cấp công cụ tải dữ liệu chính thức. Làm theo 6 bước sau:
+            {t('TikTok cung cấp công cụ tải dữ liệu chính thức. Làm theo 6 bước sau:', 'TikTok provides an official data export tool. Follow these 6 steps:', lang)}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -305,7 +321,7 @@ export default function Home() {
       <section className="relative z-10 border-t border-white/[0.05]">
         <div className="max-w-2xl mx-auto px-6 py-20 md:py-24">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-10">
-            Câu hỏi thường gặp
+            {t('Câu hỏi thường gặp', 'Frequently Asked Questions', lang)}
           </h2>
 
           <div className="space-y-2">
